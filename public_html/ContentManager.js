@@ -1,5 +1,5 @@
-var ContentManager = function(graphics) {
-    var contentManagers = [new IngameCM(graphics)];
+var ContentManager = function(engine) {
+    var contentManagers = [new IngameCM(engine)];
     var activeCM = 0;
     
     this.draw = function() {

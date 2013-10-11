@@ -9,10 +9,9 @@ function main() {
         return;
     }
     
-    var graphicsEngine = new GraphicsEngine(gl);
-    var model = graphicsEngine.createModel("ship");
+    var engine = new Engine(gl);
     
-    var contentManager = new ContentManager(graphicsEngine);
+    var contentManager = new ContentManager(engine);
     
     
     // prepare the rendering screen
@@ -25,8 +24,7 @@ function main() {
     function loop() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         
-        graphicsEngine.drawCamera();
-        //model.draw(graphicsEngine.CURRENT_PROGRAM());
+        engine.Graphics.drawCamera();
         contentManager.update();
         contentManager.draw();
         

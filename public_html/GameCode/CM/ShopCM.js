@@ -1,4 +1,4 @@
-var ShopCM = function(graphics) {
+var ShopCM = function(engine) {
     this.draw = function() {
         
     }

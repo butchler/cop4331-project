@@ -10,14 +10,22 @@
         <script src="Utils/cuon-utils.js"></script>
         <script src="Utils/webgl-debug.js"></script>
         <script src="Utils/webgl-utils.js"></script>
+        
+        <!-- Controls -->
+        <script src="Engine/Controls/EventHandler.js"></script>
+        <script src="Engine/Controls/Message.js"></script>
+        
         <!-- Graphics Engine -->
         <script src="Engine/Graphics/ParseJSON.js"></script>
         <script src="Engine/Graphics/Drawable.js"></script>
         <script src="Engine/Graphics/Renderable.js"></script>
         <script src="Engine/Graphics/Camera.js"></script>
         <script src="Engine/Graphics/EntityRepo.js"></script>
+        <script src="Engine/Graphics/GraphicalEntity.js"></script>
         <script src="Engine/Graphics/GraphicsEngine.js"></script>
         
+        <!-- Engine -->
+        <script src='Engine/Engine.js'></script>
         
         <!-- Entities -->
         <script src="GameCode/Entities/Player.js"></script>
@@ -33,7 +41,9 @@
     </head>
     <body onload="main();">
         <div>
-            <canvas id="canvas" width="800" height="600"></canvas>
+            <canvas id="canvas" width="800" height="600">
+                <p>Your browser does not support HTML5 Canvas.</p>
+            </canvas>
         </div>
     </body>
 </html>

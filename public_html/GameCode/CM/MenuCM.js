@@ -1,4 +1,4 @@
-var MenuCM = function(graphics) {
+var MenuCM = function(engine) {
     this.draw = function() {
         
     }

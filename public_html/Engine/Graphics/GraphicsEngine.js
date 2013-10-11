@@ -50,21 +50,28 @@ var GraphicsEngine = function (gl) {
 
 
     // create a repository of shared pointers for the different vertex variables
-    var locations = [pLocation, mLocation];
+    var locations = [pLocation];
    
    
    
    
-    this.createModel = function (name) {        
-        return entityRepo.addEntity(name);
+    this.createModel = function (name) {
+        var entity;
+        
+        if (entityRepo.addEntity(name)) {
+            entity = new GraphicalEntity(name);
+        }
+        
+        return entity !== undefined? entity: false;
     }
     
     
-    this.draw = function(name) {
+    this.draw = function(model) {
         var drawn = false;
         
-        if (entityRepo.entityExists(name)) {
-            entityRepo.getEntity(name).draw(this.CURRENT_PROGRAM());
+        if (entityRepo.entityExists(model.getName())) {
+            gl.uniformMatrix4fv(mLocation, false, model.getMatrix().elements);
+            entityRepo.getEntity(model.getName()).draw(this.CURRENT_PROGRAM());
             drawn = true;
         }
         
