@@ -1,5 +1,6 @@
 var GraphicsEngine = function (gl) {
     var camera = new Camera(gl, [50, 50, 50], [0, 1, 0]);
+    var entityRepo = new EntityRepo(gl);
     
     // create the vertex shader
     var vs =
@@ -55,11 +56,22 @@ var GraphicsEngine = function (gl) {
    
    
     this.createModel = function (name) {        
-        return new Renderable(gl, parseJSON("Content/Models/" + name + ".json"));
+        return entityRepo.addEntity(name);
     }
     
     
-    this.draw = function () {
+    this.draw = function(name) {
+        var drawn = false;
+        
+        if (entityRepo.entityExists(name)) {
+            entityRepo.getEntity(name).draw(this.CURRENT_PROGRAM());
+            drawn = true;
+        }
+        
+        return drawn;
+    }
+    
+    this.drawCamera = function () {
         // set the view and projection matrix in the vertex shader
         gl.uniformMatrix4fv(projLocation, false, camera.getProjMatrix().elements);
         gl.uniformMatrix4fv(viewLocation, false, camera.getViewMatrix().elements);

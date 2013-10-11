@@ -1,7 +1,9 @@
-var Player = function (graphics) {    
-    var ship = graphics.createModel("ship");
+var Player = function (graphics) {  
+    var name = "ship";
+    graphics.createModel(name);
+    
     this.draw = function () {
-        ship.draw(graphics.CURRENT_PROGRAM());
+        graphics.draw(name);
     }
     
     this.update = function () {

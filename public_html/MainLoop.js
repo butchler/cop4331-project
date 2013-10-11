@@ -25,7 +25,7 @@ function main() {
     function loop() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         
-        graphicsEngine.draw();
+        graphicsEngine.drawCamera();
         //model.draw(graphicsEngine.CURRENT_PROGRAM());
         contentManager.update();
         contentManager.draw();
