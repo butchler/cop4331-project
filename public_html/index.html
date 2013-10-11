@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <!-- scripts -->
+        <!-- utils -->
+        <script src="Utils/cuon-matrix-v2.js"></script>
+        <script src="Utils/cuon-utils.js"></script>
+        <script src="Utils/webgl-debug.js"></script>
+        <script src="Utils/webgl-utils.js"></script>
+        <!-- Graphics Engine -->
+        <script src="Engine/Graphics/ParseJSON.js"></script>
+        <script src="Engine/Graphics/Drawable.js"></script>
+        <script src="Engine/Graphics/Renderable.js"></script>
+        <script src="Engine/Graphics/Camera.js"></script>
+        <script src="Engine/Graphics/GraphicsEngine.js"></script>
+        
+        
+        <!-- Entities -->
+        <script src="GameCode/Entities/Player.js"></script>
+        
+        <!-- Content Managers -->
+        <script src="GameCode/CM/MenuCM.js"></script>
+        <script src="GameCode/CM/ShopCM.js"></script>
+        <script src="GameCode/CM/IngameCM.js"></script>
+        <script src="ContentManager.js"></script>
+        
+        <!-- Main Loop -->
+        <script src="MainLoop.js"></script>
+    </head>
+    <body onload="main();">
+        <div>
+            <canvas id="canvas" width="800" height="600"></canvas>
+        </div>
+    </body>
+</html>
