@@ -6,8 +6,8 @@ var ContentManager = function(engine) {
         contentManagers[activeCM].draw();
     }
     
-    this.update = function(engine) {
-        contentManagers[activeCM].update(engine);
+    this.update = function() {
+        contentManagers[activeCM].update();
     }
     
     this.init = function() {

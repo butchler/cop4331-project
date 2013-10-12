@@ -10,7 +10,7 @@ var Player = function (engine) {
         engine.Graphics().draw(model);
     }
     
-    this.update = function (engine) {
+    this.update = function () {
         if (engine.Messages().getMessage("W") == "down") {
             model.moveY(speed);
         }
