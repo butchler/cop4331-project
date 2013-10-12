@@ -1,4 +1,14 @@
 var Engine = function (gl) {
-    this.Graphics = new GraphicsEngine(gl);
-    this.Messages = new Message();
+    var msg = new Message();
+    var eventHandler = new EventHandler(msg);
+    
+    var ge = new GraphicsEngine(gl);
+    
+    this.Graphics = function () {
+        return ge;
+    }
+    
+    this.Messages = function () {
+        return msg;
+    }
 }

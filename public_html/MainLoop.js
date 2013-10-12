@@ -24,8 +24,8 @@ function main() {
     function loop() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         
-        engine.Graphics.drawCamera();
-        contentManager.update();
+        engine.Graphics().drawCamera();
+        contentManager.update(engine);
         contentManager.draw();
         
         window.requestAnimationFrame(loop);

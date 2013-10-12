@@ -5,8 +5,8 @@ var IngameCM = function (engine) {
         for (var i = 0; i < entityCM.length; i++) entityCM[i].draw();
     }
     
-    this.update = function () {
-        for (var i = 0; i < entityCM.length; i++) entityCM[i].update();
+    this.update = function (engine) {
+        for (var i = 0; i < entityCM.length; i++) entityCM[i].update(engine);
     }
     
     this.init = function () {
