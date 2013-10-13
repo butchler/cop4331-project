@@ -1,6 +1,10 @@
-var GraphicalEntity = function (name) {
+var GraphicalEntity = function (name, clnOn) {
     var matrix = new Matrix4();
     var modelName = name;
+    
+    var collision = clnOn !== undefined? clnOn: true;
+    var colliding = false;
+    var collidingWith = [];
     
     //                x    y    z
     var position = [0.0, 0.0, 0.0];
@@ -80,5 +84,30 @@ var GraphicalEntity = function (name) {
     // update the name of the object
     this.updateName = function (name) {
         modelName = name;
+    }
+    
+    
+    
+    // collision
+    this.isColliding = function() {
+        return colliding;
+    }
+    
+    this.addCollision = function(obj) {
+        colliding = true;
+        collidingWith.push(obj);
+    }
+    
+    this.resetCollsions = function() {
+        collidingWith = [];
+        colliding = false;
+    }
+    
+    this.getCollisions = function() {
+        return collidingWith.slice();
+    }
+    
+    this.isCollisionOn = function() {
+        return collision;
     }
 }
