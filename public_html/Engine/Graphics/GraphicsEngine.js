@@ -55,14 +55,26 @@ var GraphicsEngine = function (gl) {
    
    
    
-    this.createModel = function (name) {
+    this.createModel = function (name, collision) {
         var entity;
         
         if (entityRepo.addEntity(name)) {
             entity = new GraphicalEntity(name);
+            
+            if (collision === undefined) collision = true;
+            
+            if (collision == true) {
+                // add to collision detection list in the physics engine
+            }
         }
         
         return entity !== undefined? entity: false;
+    }
+    
+    this.destroyModel = function (model) {
+        // check that a model is no longer being used, requires garbage collection
+        // remove specific model data from collision array
+        
     }
     
     

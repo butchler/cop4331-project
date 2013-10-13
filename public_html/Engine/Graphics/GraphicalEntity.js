@@ -1,10 +1,11 @@
-var GraphicalEntity = function (name, clnOn) {
+var GraphicalEntity = function (name, clnOn, index) {
     var matrix = new Matrix4();
     var modelName = name;
     
     var collision = clnOn !== undefined? clnOn: true;
     var colliding = false;
     var collidingWith = [];
+    var collisionIndex = index;
     
     //                x    y    z
     var position = [0.0, 0.0, 0.0];
@@ -109,5 +110,14 @@ var GraphicalEntity = function (name, clnOn) {
     
     this.isCollisionOn = function() {
         return collision;
+    }
+    
+    
+    this.updateCIndex = function(index) {
+        collisionIndex = index;
+    }
+    
+    this.getCIndex = function() {
+        return collisionIndex;
     }
 }
