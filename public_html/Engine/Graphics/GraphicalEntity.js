@@ -23,7 +23,6 @@ var GraphicalEntity = function (name) {
         position[0] += x;
         position[1] += y;
         position[2] += z;
-        matrix.translate(x, y, z);
     }
     this.move = move;
     
@@ -39,8 +38,21 @@ var GraphicalEntity = function (name) {
         rotate(angle, 0.0, 0.0, 1.0);
     }
     function rotate(angle, x, y, z) {
-        rotation = [angle, x, y, z];
-        matrix.rotate(angle, x, y, z);
+        var nx, ny, nz, na, max, min;
+        
+        nx = rotation[0] * rotation[1] + x * angle;
+        ny = rotation[0] * rotation[2] + y * angle;
+        nz = rotation[0] * rotation[3] + z * angle;
+        
+        max = Math.max(nx, ny, nz);
+        min = Math.min(nx, ny, nz);
+        
+        na = Math.abs(max) > Math.abs(min)? max: min;
+        
+        rotation[0] = na;
+        rotation[1] = na != 0? nx / na: nx;
+        rotation[2] = na != 0? ny / na: ny;
+        rotation[3] = na != 0? nz / na: nz;
     }
     this.rotate = rotate;
     

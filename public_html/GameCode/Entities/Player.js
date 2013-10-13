@@ -11,6 +11,7 @@ var Player = function (engine) {
     }
     
     this.update = function () {
+        
         if (engine.Messages().getMessage("W") == "down") {
             model.moveY(speed);
         }
@@ -43,7 +44,7 @@ var Player = function (engine) {
         
         if (engine.Messages().getMessage("A") == "up") {            
             if (rotatedBy == "A") {
-                model.rotateY(0);
+                model.rotateY(45);
                 rotatedBy = "";
             }
         }
@@ -51,7 +52,7 @@ var Player = function (engine) {
         
         if (engine.Messages().getMessage("D") == "up") {
             if (rotatedBy == "D") {
-                model.rotateY(0);
+                model.rotateY(-45);
                 rotatedBy = "";
             }
         }
