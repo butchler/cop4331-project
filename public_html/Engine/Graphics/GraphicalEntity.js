@@ -72,7 +72,7 @@ var GraphicalEntity = function (name, selfRef, clnOn, index) {
     }
     
     
-    // get the matrix
+    // get the matrix, need a new matrix4 float
     this.getMatrix = function () {
         var m = new Matrix4();
         
