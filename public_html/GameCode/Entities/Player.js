@@ -1,10 +1,10 @@
 var Player = function (engine) {  
     var name = "ship";
-    var speed = 0.2;
+    var speed = 0.5;
     
     var rotatedBy = "";
     
-    var model = engine.Graphics().createModel(name);
+    var model = engine.Graphics().createModel(name, this);
     
     this.draw = function () {
         engine.Graphics().draw(model);

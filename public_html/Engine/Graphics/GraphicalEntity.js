@@ -1,6 +1,7 @@
-var GraphicalEntity = function (name, clnOn, index) {
+var GraphicalEntity = function (name, selfRef, clnOn, index) {
     var matrix = new Matrix4();
     var modelName = name;
+    var self = selfRef;
     
     var collision = clnOn !== undefined? clnOn: true;
     var colliding = false;
@@ -10,7 +11,7 @@ var GraphicalEntity = function (name, clnOn, index) {
     //                x    y    z
     var position = [0.0, 0.0, 0.0];
     
-    //              a    x    y    z
+    //                a    x    y    z
     var rotation = [0.0, 0.0, 0.0, 0.0];
     
     
@@ -62,6 +63,15 @@ var GraphicalEntity = function (name, clnOn, index) {
     this.rotate = rotate;
     
     
+    this.getPosition = function() {
+        return position.slice();
+    }
+    
+    this.getOrientation = function() {
+        return rotation.slice();
+    }
+    
+    
     // get the matrix
     this.getMatrix = function () {
         var m = new Matrix4();
@@ -85,6 +95,11 @@ var GraphicalEntity = function (name, clnOn, index) {
     // update the name of the object
     this.updateName = function (name) {
         modelName = name;
+    }
+    
+    
+    this.getParent = function () {
+        return self;
     }
     
     

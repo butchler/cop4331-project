@@ -1,5 +1,6 @@
 var Renderable = function (gl, modelObject) {
     var meshes = [];
+    var bounds = [];
     
     for (var i = 0; i < modelObject.meshes.length; i++) {
         var mesh = modelObject.meshes[i];
@@ -13,5 +14,16 @@ var Renderable = function (gl, modelObject) {
         
         for (var i = 0; i < meshes.length; i++)
             meshes[i].draw(locations);
+    }
+    
+    
+    // can calculate an array of bounds
+    function calcBounds() {
+        
+    }
+    
+    // can be an array of bounds
+    this.getBounds = function () {
+        
     }
 }
