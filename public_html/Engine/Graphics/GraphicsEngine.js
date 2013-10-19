@@ -1,4 +1,4 @@
-var GraphicsEngine = function (gl) {
+var GraphicsEngine = function (gl, collisionDetection) {
     var camera = new Camera(gl, [50, 50, 50], [0, 1, 0]);
     var entityRepo = new EntityRepo(gl);
     
@@ -53,18 +53,21 @@ var GraphicsEngine = function (gl) {
     var locations = [pLocation];
    
    
-   
+   this.getRepo = function () {
+       return entityRepo;
+   }
    
     this.createModel = function (name, collision) {
         var entity;
         
-        if (entityRepo.addEntity(name)) {
-            entity = new GraphicalEntity(name);
+        if (entityRepo.addEntity(name)) {            
+            if (collision === undefined) collision = true;      
             
-            if (collision === undefined) collision = true;
+            entity = new GraphicalEntity(name, collision, 0);
             
             if (collision == true) {
                 // add to collision detection list in the physics engine
+                collisionDetection.addCollider(entity);
             }
         }
         
@@ -72,9 +75,7 @@ var GraphicsEngine = function (gl) {
     }
     
     this.destroyModel = function (model) {
-        // check that a model is no longer being used, requires garbage collection
-        // remove specific model data from collision array
-        
+        collisionDetection.removeCollider(model.getCIndex());
     }
     
     

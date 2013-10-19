@@ -10,6 +10,10 @@ var ContentManager = function(engine) {
         contentManagers[activeCM].update();
     }
     
+    this.collision = function() {
+        contentManagers[activeCM].collision();
+    }
+    
     this.init = function() {
         contentManagers[activeCM].init();
     }

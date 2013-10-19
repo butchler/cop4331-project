@@ -4,7 +4,7 @@ var Player = function (engine) {
     
     var rotatedBy = "";
     
-    var model = engine.Graphics().createModel(name, this);
+    var model = engine.Graphics().createModel(name);
     
     this.draw = function () {
         engine.Graphics().draw(model);
@@ -56,5 +56,13 @@ var Player = function (engine) {
                 rotatedBy = "";
             }
         }
+    }
+    
+    this.getModel = function() {
+        return model;
+    }
+    
+    this.collision = function() {
+        return model.isColliding();
     }
 }

@@ -1,8 +1,12 @@
 var Engine = function (gl) {
     var msg = new Message();
     var eventHandler = new EventHandler(msg);
-    var ge = new GraphicsEngine(gl);
+    var cd = new CollisionDetection();
+    var ge = new GraphicsEngine(gl, cd);
     var config = new Config();
+    
+    
+    cd.setRepo(ge.getRepo());
     
     this.Graphics = function () {
         return ge;
@@ -14,5 +18,9 @@ var Engine = function (gl) {
     
     this.Configs = function () {
         
+    }
+    
+    this.runCollisionTest = function () {
+        cd.runCollision();
     }
 }

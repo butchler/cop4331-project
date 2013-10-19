@@ -26,6 +26,8 @@ function main() {
         
         engine.Graphics().drawCamera();
         contentManager.update();
+        engine.runCollisionTest();
+        contentManager.collision();
         contentManager.draw();
         
         window.requestAnimationFrame(loop);
