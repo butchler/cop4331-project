@@ -1,4 +1,5 @@
 var GraphicalEntity = function (name, clnOn, index) {
+    // deprecate matrix
     var matrix = new Matrix4();
     var modelName = name;
     
@@ -121,10 +122,12 @@ var GraphicalEntity = function (name, clnOn, index) {
     }
     
     
+    // deprecate
     this.updateCIndex = function(index) {
         collisionIndex = index;
     }
     
+    // deprecate
     this.getCIndex = function() {
         return collisionIndex;
     }
