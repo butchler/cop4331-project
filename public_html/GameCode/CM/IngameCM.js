@@ -1,12 +1,12 @@
 var IngameCM = function (engine) {
-    var entityCM = [new Player(engine), new Cube(engine)];
-    
-    this.draw = function () {
+    var entityCM = [new Player(engine), new Cube(engine), new Bullet(engine)];
+   
+    this.draw = function () {       
         for (var i = 0; i < entityCM.length; i++) entityCM[i].draw();
     }
     
     this.update = function () {
-        for (var i = 0; i < entityCM.length; i++) entityCM[i].update();
+        for (var i = 0; i < entityCM.length; i++) entityCM[i].update();  
     }
     
     this.collision = function() {
@@ -14,10 +14,10 @@ var IngameCM = function (engine) {
             if (entityCM[i].collision()) {
                 engine.Graphics().destroyModel(entityCM[i].getModel());
                 
-                if (entityCM.length > 1)
-                    entityCM[i] = entityCM.pop();
-                else
+                if (entityCM.length == i+1)
                     entityCM.pop();
+                else
+                    entityCM[i] = entityCM.pop();                             
                 
                 i--;
             }
