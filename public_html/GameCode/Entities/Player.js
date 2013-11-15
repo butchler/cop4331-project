@@ -2,6 +2,13 @@ var Player = function (engine) {
     var name = "ship";
     var speed = 0.5;
     
+    var XBOUNDS = 50;
+    var YBOUNDS = 40;
+    
+    var hpBar = document.getElementById('hp');
+    var hp = 100;
+    var scale = 1;
+    
     var rotatedBy = "";
     
     var model = engine.Graphics().createModel(name);
@@ -11,51 +18,26 @@ var Player = function (engine) {
     }
     
     this.update = function () {
+        if (engine.Messages().getMessage(" ") == "down") {
+            hp -= scale;
+            progress(hpBar, hp + '%');
+        }
         
-        if (engine.Messages().getMessage("W") == "down") {
+        
+        if (engine.Messages().getMessage("W") == "down")
             model.moveY(speed);
-        }
         
         
-        if (engine.Messages().getMessage("S") == "down") {
+        if (engine.Messages().getMessage("S") == "down")
             model.moveY(-speed);
-        }
         
         
-        if (engine.Messages().getMessage("A") == "down") {
+        if (engine.Messages().getMessage("A") == "down")
             model.moveX(-speed);
-            
-            if (rotatedBy != "A") {
-                model.rotateY(-45);
-                rotatedBy = "A";
-            }
-        }
         
         
-        if (engine.Messages().getMessage("D") == "down") {
+        if (engine.Messages().getMessage("D") == "down")
             model.moveX(speed);
-            
-            if (rotatedBy != "D") {
-                model.rotateY(45);
-                rotatedBy = "D";
-            }
-        }
-        
-        
-        if (engine.Messages().getMessage("A") == "up") {            
-            if (rotatedBy == "A") {
-                model.rotateY(45);
-                rotatedBy = "";
-            }
-        }
-        
-        
-        if (engine.Messages().getMessage("D") == "up") {
-            if (rotatedBy == "D") {
-                model.rotateY(-45);
-                rotatedBy = "";
-            }
-        }
     }
     
     this.getModel = function() {
@@ -63,6 +45,16 @@ var Player = function (engine) {
     }
     
     this.collision = function() {
+        var x = model.getPosition()[0];
+        var y = model.getPosition()[1];
+        
+        
+        if (y < -YBOUNDS) model.moveY(-YBOUNDS - y);
+        if (y >  YBOUNDS) model.moveY( YBOUNDS - y);
+        
+        if (x < -XBOUNDS) model.moveX(-XBOUNDS - x);
+        if (x >  XBOUNDS) model.moveX( XBOUNDS - x);
+        
         return model.isColliding();
     }
 }

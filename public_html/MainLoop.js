@@ -30,6 +30,7 @@ function main() {
         contentManager.collision();
         contentManager.draw();
         
+        
         window.requestAnimationFrame(loop);
     }
     loop();

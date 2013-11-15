@@ -1,5 +1,5 @@
 var GraphicsEngine = function (gl, collisionDetection) {
-    var camera = new Camera(gl, [50, 50, 50], [0, 1, 0]);
+    var camera = new Camera(gl, 150, [0, 1, 0]);
     var entityRepo = new EntityRepo(gl);
     
     // create the vertex shader

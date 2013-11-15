@@ -11,6 +11,12 @@
         <script src="Utils/webgl-debug.js"></script>
         <script src="Utils/webgl-utils.js"></script>
         
+        
+        
+        <!-- html specific -->
+        <script src='progress.js'></script>
+        
+        
         <!-- Controls -->
         <script src='Engine/Controls/Config.js'></script>
         <script src="Engine/Controls/Message.js"></script>
@@ -43,12 +49,94 @@
         
         <!-- Main Loop -->
         <script src="MainLoop.js"></script>
+        <style>
+            body
+            {
+                background-color: black;
+                color: white;
+            }
+            .hp
+            {
+                border: 1px black solid;
+                background-color: lightgrey;
+                width: 100px;
+                height: 10px;
+                padding: 2px;
+                text-align: center;
+            }
+            #hp
+            {
+                width: 100%;
+                height: 100%;
+                background-color: red;
+            }
+            .shield
+            {
+                border: 1px black solid;
+                background-color: lightgrey;
+                width: 100px;
+                height: 10px;
+                padding: 2px;
+                text-align: center;
+            }
+            #shield
+            {
+                width: 0%;
+                height: 100%;
+                background-color: lightgoldenrodyellow;
+            }
+        </style>
     </head>
     <body onload="main();">
         <div>
-            <canvas id="canvas" width="800" height="600">
-                <p>Your browser does not support HTML5 Canvas.</p>
-            </canvas>
+            <table>
+                <tr>
+                    <td><img src='Content/Images/world.png' /></td>
+                    <td><img src='Content/Images/shop.png' /></td>
+                    <td><img src='Content/Images/combat.png' /></td>
+                    <td>Save</td>
+                </tr>
+                <tr>
+                    <!-- info bar -->
+                    <td colspan="4">
+                        <div>
+                            <table width='100%'>
+                                <tr>
+                                    <td>HP</td>
+                                    <td>
+                                        <div class='hp'>
+                                            <div id='hp'></div>
+                                        </div>
+                                    </td>
+                                    <td>Shield</td>
+                                    <td>
+                                        <div class='shield'>
+                                            <div id='shield'></div>
+                                        </div>
+                                    </td>
+                                    <td>Resources</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <!-- body -->
+                    <td colspan="4">
+                        <div id="combat">
+                            <canvas id="canvas" style='border: 1px white solid;' width="800" height="600">
+                                <p>Your browser does not support HTML5 Canvas.</p>
+                            </canvas>
+                        </div>
+                        <div id="world">
+                            
+                        </div>
+                        <div id="shop">
+                            
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </body>
 </html>
