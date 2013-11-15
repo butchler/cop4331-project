@@ -1,5 +1,6 @@
-var GraphicalEntity = function (name, clnOn, index) {
+var GraphicalEntity = function (objin, name, clnOn, index) {
     var matrix = new Matrix4();
+    var obj = objin;
     var modelName = name;
     
     var collision = clnOn !== undefined? clnOn: true;
@@ -92,16 +93,13 @@ var GraphicalEntity = function (name, clnOn, index) {
     
     
     // get the name of the object
+    this.getObj = function () {
+        return obj;
+    }  
+    
     this.getName = function () {
         return modelName;
     }
-    
-    
-    // update the name of the object
-    this.updateName = function (name) {
-        modelName = name;
-    }    
-    
     
     // collision
     this.isColliding = function() {

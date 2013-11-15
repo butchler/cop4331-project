@@ -1,6 +1,6 @@
 var IngameCM = function (engine) {
     var player = new Player(engine);
-    var enemies = [];
+    var enemies = [new Enemy(engine)];
     var bullets = [];
     
     this.draw = function () {
@@ -28,9 +28,17 @@ var IngameCM = function (engine) {
     this.collision = function() {
         player.collision();
         
-        for (var i = 0; i < enemies.length; i++) enemies[i].collision();
+        for (var i = 0; i < enemies.length; i++) {
+            if (enemies[i].collision()) {
+                removeEntity(enemies, i);
+            }
+        }
         
-        for (var i = 0; i < bullets.length; i++) bullets[i].collision();
+        for (var i = 0; i < bullets.length; i++) {
+            if (bullets[i].collision()) {
+                removeEntity(bullets, i);
+            }
+        }
     }
     
     this.init = function () {

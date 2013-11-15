@@ -1,11 +1,13 @@
 var Bullet = function (engine, pos) {
+    var type = 'bullet';
     var name = "sphere";
     var speed = 2.0;
+    var dmg = 10.0;
     
     var MAX_BULLET_HEIGHT = 50;
     
     
-    var model = engine.Graphics().createModel(name);
+    var model = engine.Graphics().createModel(name, this);
     model.setPosition(pos[0], pos[1], pos[2]);
     
     this.draw = function () {
@@ -18,13 +20,33 @@ var Bullet = function (engine, pos) {
     }
     
     this.collision = function () {
+        var isDestroyed = false;
         
+        var cols = model.getCollisions();
+        
+        for (var i = 0; i < cols.length; i++) {
+            var obj = cols[i].getObj();
+            
+            if (obj.getName() !== 'player') {
+                isDestroyed = true;
+            }
+        }
+        
+        return isDestroyed;
     }
     
     this.isOutside = function () {
         return model.getPosition()[1] > MAX_BULLET_HEIGHT;
     }
     
+    
+    this.getName = function () {
+        return type;
+    }
+    
+    this.getDamage = function () {
+        return dmg;
+    }
     
     
     this.destroy = function () {

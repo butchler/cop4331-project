@@ -57,13 +57,13 @@ var GraphicsEngine = function (gl, collisionDetection) {
        return entityRepo;
    }
    
-    this.createModel = function (name, collision) {
+    this.createModel = function (name, obj, collision) {
         var entity;
         
         if (entityRepo.addEntity(name)) {            
             if (collision === undefined) collision = true;      
             
-            entity = new GraphicalEntity(name, collision, 0);
+            entity = new GraphicalEntity(obj, name, collision, 0);
             
             if (collision == true) {
                 // add to collision detection list in the physics engine

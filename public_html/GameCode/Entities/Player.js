@@ -1,8 +1,9 @@
 var Player = function (engine) {  
+    var type = 'player';
     var name = "ship";
     var speed = 0.5;
     
-    var model = engine.Graphics().createModel(name);
+    var model = engine.Graphics().createModel(name, this);
     
     var XBOUNDS = 50;
     var YBOUNDS = 40;
@@ -59,6 +60,11 @@ var Player = function (engine) {
     
     this.getModel = function() {
         return model;
+    }
+    
+    
+    this.getName = function () {
+        return type;
     }
     
     this.collision = function() {
