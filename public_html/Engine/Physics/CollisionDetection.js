@@ -13,12 +13,12 @@ var CollisionDetection = function() {
     }
     
     this.removeCollider = function(ind) {
-        if (objects.length > 1) {
+        if (objects.length == 1 || ind == objects.length - 1) {
+            objects.pop();
+        }
+        else if (objects.length > 1) {
             objects[ind] = objects.pop();
             objects[ind].updateCIndex(ind);
-        }
-        else if (objects.length == 1) {
-            objects.pop();
         }
     }
     

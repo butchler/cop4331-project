@@ -1,12 +1,12 @@
-var Bullet = function (engine) {
-    var name = "cube";
-    var speed = 0.5;
+var Bullet = function (engine, pos) {
+    var name = "sphere";
+    var speed = 2.0;
     
-    var MAX_BULLET_HEIGHT = 16;
+    var MAX_BULLET_HEIGHT = 50;
     
     
     var model = engine.Graphics().createModel(name);
-    
+    model.setPosition(pos[0], pos[1], pos[2]);
     
     this.draw = function () {
         engine.Graphics().draw(model);
@@ -17,8 +17,17 @@ var Bullet = function (engine) {
         model.moveY(speed);
     }
     
+    this.collision = function () {
+        
+    }
     
     this.isOutside = function () {
         return model.getPosition()[1] > MAX_BULLET_HEIGHT;
+    }
+    
+    
+    
+    this.destroy = function () {
+        engine.Graphics().destroyModel(model);
     }
 }

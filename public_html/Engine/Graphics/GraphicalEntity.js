@@ -31,6 +31,12 @@ var GraphicalEntity = function (name, clnOn, index) {
     }
     this.move = move;
     
+    this.setPosition = function (x, y, z) {
+        position[0] = x;
+        position[1] = y;
+        position[2] = z;
+    }
+    
     
     // rotate the object
     this.rotateX = function (angle) {

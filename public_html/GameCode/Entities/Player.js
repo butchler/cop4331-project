@@ -2,28 +2,27 @@ var Player = function (engine) {
     var name = "ship";
     var speed = 0.5;
     
+    var model = engine.Graphics().createModel(name);
+    
     var XBOUNDS = 50;
     var YBOUNDS = 40;
     
+    
+    
     var hpBar = document.getElementById('hp');
     var hp = 100;
-    var scale = 1;
     
-    var rotatedBy = "";
     
-    var model = engine.Graphics().createModel(name);
+    var timer = 300, prevTime = new Date().getTime();
+    
+    
+    
     
     this.draw = function () {
         engine.Graphics().draw(model);
     }
     
     this.update = function () {
-        if (engine.Messages().getMessage(" ") == "down") {
-            hp -= scale;
-            progress(hpBar, hp + '%');
-        }
-        
-        
         if (engine.Messages().getMessage("W") == "down")
             model.moveY(speed);
         
@@ -38,6 +37,24 @@ var Player = function (engine) {
         
         if (engine.Messages().getMessage("D") == "down")
             model.moveX(speed);
+    }
+    
+    this.isShooting = function(list) {
+        if (engine.Messages().getMessage(" ") == "down" && canCreateBullet()) {
+            list.push(new Bullet(engine, model.getPosition()));
+            prevTime = new Date().getTime();
+        }
+    }
+    
+    function canCreateBullet() {
+        var canCreate = false;
+        var curTime = new Date().getTime();
+        
+        if (curTime - prevTime > timer) {
+            canCreate = true;
+        }
+        
+        return canCreate;
     }
     
     this.getModel = function() {

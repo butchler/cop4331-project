@@ -1,4 +1,4 @@
-function main() {
+var MainLoop = function () {
     // setup canvas and gl context
     var canvas = document.getElementById("canvas");
     var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -30,8 +30,10 @@ function main() {
         contentManager.collision();
         contentManager.draw();
         
+        console.log("looping.");
         
-        window.requestAnimationFrame(loop);
+        if (document.getElementById("visibleElem").className == 'combat')
+            window.requestAnimationFrame(loop);
     }
-    loop();
+    this.loop = loop;
 }

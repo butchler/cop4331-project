@@ -38,6 +38,7 @@
         <script src='Engine/Engine.js'></script>
         
         <!-- Entities -->
+        <script src="GameCode/Entities/Bullet.js"></script>
         <script src="GameCode/Entities/Player.js"></script>
         <script src="GameCode/Entities/Cube.js"></script>
         
@@ -49,11 +50,45 @@
         
         <!-- Main Loop -->
         <script src="MainLoop.js"></script>
+        
+        
+        <script type="text/javascript">
+            var game;
+            function main() {
+                game = new MainLoop();
+            }
+            
+            
+            function swapVisible(elem) {
+                var vis = document.getElementById("visibleElem");
+                var hide = document.getElementById(vis.className);
+                var show = document.getElementById(elem.className);
+                hide.style.display = 'none';
+                show.style.display = 'block';
+                
+                vis.className = elem.className;
+                
+                if (elem.className == 'combat') {
+                    startRound();
+                }
+            }
+            
+            
+            function startRound() {
+                game.loop();
+            }
+        </script>
+        
+        
         <style>
             body
             {
                 background-color: black;
                 color: white;
+            }
+            .wide
+            {
+                width: 800px;
             }
             .hp
             {
@@ -91,9 +126,9 @@
         <div>
             <table>
                 <tr>
-                    <td><img src='Content/Images/world.png' /></td>
-                    <td><img src='Content/Images/shop.png' /></td>
-                    <td><img src='Content/Images/combat.png' /></td>
+                    <td><img src='Content/Images/world.png' class="world" onclick="swapVisible(this);" /></td>
+                    <td><img src='Content/Images/shop.png' class="shop" onclick="swapVisible(this);" /></td>
+                    <td><img src='Content/Images/combat.png' class="combat" onclick="swapVisible(this);" /></td>
                     <td>Save</td>
                 </tr>
                 <tr>
@@ -114,7 +149,10 @@
                                             <div id='shield'></div>
                                         </div>
                                     </td>
-                                    <td>Resources</td>
+                                    <td>Gold:</td>
+                                    <td>0</td>
+                                    <td>Metal:</td>
+                                    <td>0</td>
                                 </tr>
                             </table>
                         </div>
@@ -123,16 +161,17 @@
                 <tr>
                     <!-- body -->
                     <td colspan="4">
-                        <div id="combat">
+                        <div id="visibleElem" class="world"></div>
+                        <div id="combat" class="wide" style="display: none;">
                             <canvas id="canvas" style='border: 1px white solid;' width="800" height="600">
                                 <p>Your browser does not support HTML5 Canvas.</p>
                             </canvas>
                         </div>
-                        <div id="world">
-                            
+                        <div id="world" class="wide">
+                            in world view
                         </div>
-                        <div id="shop">
-                            
+                        <div id="shop" class="wide" style="display: none;">
+                            in shop view
                         </div>
                     </td>
                 </tr>
