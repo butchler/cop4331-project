@@ -3,6 +3,8 @@ var Player = function (engine) {
     var name = "ship";
     var speed = 0.5;
     
+    var alive = true;
+    
     var model = engine.Graphics().createModel(name, this);
     
     var XBOUNDS = 50;
@@ -12,7 +14,7 @@ var Player = function (engine) {
     
     var hpBar = document.getElementById('hp');
     var hp = 100;
-    
+    var dmg = 50.0;
     
     var timer = 300, prevTime = new Date().getTime();
     
@@ -67,7 +69,11 @@ var Player = function (engine) {
         return type;
     }
     
-    this.collision = function() {
+    this.getDamage = function () {
+        return dmg;
+    }
+    
+    this.collision = function() {        
         var x = model.getPosition()[0];
         var y = model.getPosition()[1];
         
@@ -78,6 +84,23 @@ var Player = function (engine) {
         if (x < -XBOUNDS) model.moveX(-XBOUNDS - x);
         if (x >  XBOUNDS) model.moveX( XBOUNDS - x);
         
-        return model.isColliding();
+        
+        var cols = model.getCollisions();
+        
+        for (var i = 0; i < cols.length; i++) {
+            var obj = cols[i].getObj();
+            
+            if (obj.getName() != 'bullet' && obj.getDamage !== undefined) {
+                hp -= obj.getDamage();
+                
+                progress(hpBar, hp + '%');
+            }
+        }
+        
+        
+        if (hp <= 0)
+            alive = false;
+        
+        return !alive;
     }
 }

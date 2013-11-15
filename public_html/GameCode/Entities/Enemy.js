@@ -2,7 +2,8 @@ var Enemy = function (engine) {
     var type = 'enemy';
     var name = "cube";
     
-    var hp = 20;
+    var hp = 20.0;
+    var dmg = 25.0;
     
     var model = engine.Graphics().createModel(name, this);
     model.moveY(30);
@@ -24,6 +25,10 @@ var Enemy = function (engine) {
     
     this.getName = function () {
         return type;
+    }
+    
+    this.getDamage = function () {
+        return dmg;
     }
     
     this.collision = function() {
