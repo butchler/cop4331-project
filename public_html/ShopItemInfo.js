@@ -45,6 +45,11 @@ var ShopItemInfo = function (name, Cost, Inc, Lvl) {
             c.innerHTML = "--";
             i.innerHTML = "--";
         }
+        
+        if (item == 'health') {
+            var hpBar = document.getElementById('hp');
+            progress(hpBar, (globals.currentHealth / globals.healthStat) * 100 + '%');
+        }
     }
     this.setValues = setValues;
 }

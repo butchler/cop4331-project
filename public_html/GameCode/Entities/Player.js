@@ -3,13 +3,14 @@ var Player = function (engine) {
     var name = "ship";
     
     
-    var speed = 0.5;
-    var hp = 100;
-    var shieldCapacity = 0;
+    var hpBar = document.getElementById('hp');
+    
+    
+    var speed = globals.speedStat / 200.0;
+    var maxhp = globals.healthStat;
     var dmg = 50.0;
-    var bulletDmg = 10.0;
-    var timer = 500;
-    var rockets = 0;
+    var bulletDmg = globals.damageStat;
+    var timer = 1000 / globals.rateStat;
     
     var alive = true;
     
@@ -19,9 +20,6 @@ var Player = function (engine) {
     var XBOUNDS = 50;
     var YBOUNDS = 40;
     
-    
-    
-    var hpBar = document.getElementById('hp');
     
     var prevTime = new Date().getTime();
     
@@ -98,14 +96,14 @@ var Player = function (engine) {
             var obj = cols[i].getObj();
             
             if (obj.getName() != 'bullet' && obj.getDamage !== undefined) {
-                hp -= obj.getDamage();
+                globals.currentHealth -= obj.getDamage();
                 
-                progress(hpBar, hp + '%');
+                progress(hpBar, (globals.currentHealth / maxhp) * 100 + '%');
             }
         }
         
         
-        if (hp <= 0)
+        if (globals.currentHealth <= 0)
             alive = false;
         
         return !alive;

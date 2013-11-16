@@ -65,6 +65,8 @@
             globals.speedBase = 100;
             globals.rateBase = 2;
             
+            globals.currentHealth = 100;
+            globals.shield = 0;
             
             function main() {
                 init();
@@ -99,6 +101,7 @@
                 
                 if (globals.gold >= 50) {
                     progress(hp, '100%');
+                    globals.currentHealth = globals.healthStat;
                     setGold(globals.gold - 50);
                 }
             }
