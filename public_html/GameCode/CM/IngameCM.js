@@ -47,7 +47,7 @@ var IngameCM = function (engine) {
         player.destroy();
         player = new Player(engine);
         
-        encounter = new EnemyWaveInfo(engine, 1);
+        encounter = new EnemyWaveInfo(engine, globals.difficulty);
     }
     
     function removeEntity(list, index) {

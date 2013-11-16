@@ -8,7 +8,7 @@ var Player = function (engine) {
     var shieldCapacity = 0;
     var dmg = 50.0;
     var bulletDmg = 10.0;
-    var timer = 300;
+    var timer = 500;
     var rockets = 0;
     
     var alive = true;

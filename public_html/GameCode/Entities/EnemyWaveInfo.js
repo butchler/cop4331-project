@@ -39,16 +39,15 @@ var EnemyWaveInfo = function (engine, difficulty) {
     }
     
     function winProcedure () {
-        var lock = document.getElementById("combatLock");
-        lock.className = "unlocked";
+        globals.lock = "unlocked";
         
-        var vis = document.getElementById("visibleElem");
+        
         var hide = document.getElementById("combat");
         var show = document.getElementById("world");
         hide.style.display = 'none';
         show.style.display = 'block';
 
-        vis.className = "world";
+        globals.vis = "world";
         
         alert("Congradulations: You won!");
     }

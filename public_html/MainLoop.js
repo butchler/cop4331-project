@@ -30,7 +30,8 @@ var MainLoop = function () {
         contentManager.collision();
         contentManager.draw();
         
-        if (document.getElementById("visibleElem").className == 'combat')
+        
+        if (globals.vis == 'combat')
             window.requestAnimationFrame(loop);
     }
     

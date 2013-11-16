@@ -56,26 +56,33 @@
         
         <script type="text/javascript">
             var game;
+            var globals = new Object();
+            
+            globals.vis = "world";
+            globals.lock = "unlocked";
+            globals.difficulty = 1;
+            
             function main() {
                 game = new MainLoop();
             }
             
             
             function swapVisible(elem) {
-                var lock = document.getElementById("combatLock");
+                //var lock = document.getElementById("combatLock");
                 
-                if (lock.className == "unlocked") {
-                    var vis = document.getElementById("visibleElem");
-                    var hide = document.getElementById(vis.className);
+                if (globals.lock == "unlocked") {
+                    //var vis = document.getElementById("visibleElem");
+                    var hide = document.getElementById(globals.vis);
                     var show = document.getElementById(elem.className);
                     hide.style.display = 'none';
                     show.style.display = 'block';
-
-                    vis.className = elem.className;
+                    
+                    globals.vis = elem.className;
+                    //vis.className = elem.className;
 
                     if (elem.className == 'combat') {
                         startRound();
-                        lock.className = 'locked';
+                        globals.lock = 'locked';
                     }
                 }
             }
@@ -127,6 +134,18 @@
                 height: 100%;
                 background-color: lightgoldenrodyellow;
             }
+            button
+            {
+                width: 200px;
+            }
+            table.wide tr td
+            {
+                padding: 10px;
+            }
+            table.wide tr td div
+            {
+                display: inline;
+            }
         </style>
     </head>
     <body onload="main();">
@@ -156,6 +175,10 @@
                                             <div id='shield'></div>
                                         </div>
                                     </td>
+                                    <td>Rockets</td>
+                                    <td>
+                                        <div id="rockets">0/1</div>
+                                    </td>
                                     <td>Gold:</td>
                                     <td>0</td>
                                     <td>Metal:</td>
@@ -168,8 +191,6 @@
                 <tr>
                     <!-- body -->
                     <td colspan="4">
-                        <div id="visibleElem" class="world"></div>
-                        <div id="combatLock" class="unlocked"></div>
                         <div id="combat" class="wide" style="display: none;">
                             <canvas id="canvas" style='border: 1px white solid;' width="800" height="600">
                                 <p>Your browser does not support HTML5 Canvas.</p>
@@ -179,14 +200,109 @@
                             in world view
                         </div>
                         <div id="shop" class="wide" style="display: none;">
-                            <table>
+                            <table class="wide">
                                 <tr>
-                                    <td>
+                                    <td colspan="4">
                                         <h2>Shop</h2>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td></td>
+                                    <td colspan="4">
+                                        <h3>Refills</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button>Repair</button>
+                                    </td>
+                                    <td>
+                                        <div id="repairCost">50</div>g
+                                    </td>
+                                    <td>
+                                        <button>Rockets</button>
+                                    </td>
+                                    <td>
+                                        <div id="rocketCost">50</div>g
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4"><h3>Upgrades</h3></td>
+                                </tr>
+                                <tr>
+                                    <td><h4>Type</h4></td>
+                                    <td><h4>Cost</h4></td>
+                                    <td><h4>Increase</h4></td>
+                                    <td><h4>Level</h4></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="health">Health</button>
+                                    </td>
+                                    <td>
+                                        <div id="healthCost">25</div>g
+                                    </td>
+                                    <td>
+                                        +<div id="healthInc">50</div> hp
+                                    </td>
+                                    <td>
+                                        <div id="healthLvl">1</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="rocketCap">Rocket Capacity</button>
+                                    </td>
+                                    <td>
+                                        <div id="rocketCapCost">25</div>g
+                                    </td>
+                                    <td>
+                                        +<div id="rocketCapInc">1</div> rocket Capacity
+                                    </td>
+                                    <td>
+                                        <div id="rocketCapLvl">1</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="damage">Damage</button>
+                                    </td>
+                                    <td>
+                                        <div id="damageCost">25</div>g
+                                    </td>
+                                    <td>
+                                        +<div id="damageInc">10</div> damage
+                                    </td>
+                                    <td>
+                                        <div id="damageLvl">1</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="speed">Movement Speed</button>
+                                    </td>
+                                    <td>
+                                        <div id="speedCost">25</div>g
+                                    </td>
+                                    <td>
+                                        +<div id="speedInc">20</div>% base speed
+                                    </td>
+                                    <td>
+                                        <div id="speedLvl">1</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="rate">Fire Rate</button>
+                                    </td>
+                                    <td>
+                                        <div id="rateCost">25</div>g
+                                    </td>
+                                    <td>
+                                        +<div id="rateInc">1</div> bullet per second
+                                    </td>
+                                    <td>
+                                        <div id="rateLvl">1</div>
+                                    </td>
                                 </tr>
                             </table>
                         </div>
