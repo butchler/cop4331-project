@@ -32,5 +32,24 @@ var EnemyWaveInfo = function (engine, difficulty) {
                 pattern[(timestep + 1) % timesteps], 
                 timestamps[timestep], timesteps);
         }
+        
+        
+        if (spawnCount >= enemyWaveSize && enemies.length == 0) 
+            winProcedure();
+    }
+    
+    function winProcedure () {
+        var lock = document.getElementById("combatLock");
+        lock.className = "unlocked";
+        
+        var vis = document.getElementById("visibleElem");
+        var hide = document.getElementById("combat");
+        var show = document.getElementById("world");
+        hide.style.display = 'none';
+        show.style.display = 'block';
+
+        vis.className = "world";
+        
+        alert("Congradulations: You won!");
     }
 }

@@ -62,16 +62,21 @@
             
             
             function swapVisible(elem) {
-                var vis = document.getElementById("visibleElem");
-                var hide = document.getElementById(vis.className);
-                var show = document.getElementById(elem.className);
-                hide.style.display = 'none';
-                show.style.display = 'block';
+                var lock = document.getElementById("combatLock");
                 
-                vis.className = elem.className;
-                
-                if (elem.className == 'combat') {
-                    startRound();
+                if (lock.className == "unlocked") {
+                    var vis = document.getElementById("visibleElem");
+                    var hide = document.getElementById(vis.className);
+                    var show = document.getElementById(elem.className);
+                    hide.style.display = 'none';
+                    show.style.display = 'block';
+
+                    vis.className = elem.className;
+
+                    if (elem.className == 'combat') {
+                        startRound();
+                        lock.className = 'locked';
+                    }
                 }
             }
             
@@ -164,6 +169,7 @@
                     <!-- body -->
                     <td colspan="4">
                         <div id="visibleElem" class="world"></div>
+                        <div id="combatLock" class="unlocked"></div>
                         <div id="combat" class="wide" style="display: none;">
                             <canvas id="canvas" style='border: 1px white solid;' width="800" height="600">
                                 <p>Your browser does not support HTML5 Canvas.</p>
