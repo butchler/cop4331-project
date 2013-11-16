@@ -1,7 +1,9 @@
 var IngameCM = function (engine) {
     var player = new Player(engine);
-    var enemies = [new Enemy(engine)];
+    var enemies = [];
     var bullets = [];
+    
+    var encounter = new EnemyWaveInfo(engine, 10.0);
     
     this.draw = function () {
         player.draw();
@@ -16,7 +18,7 @@ var IngameCM = function (engine) {
         
         player.isShooting(bullets);
         
-        for (var i = 0; i < enemies.length; i++) enemies[i].update();
+        encounter.update(enemies);
         
         for (var i = 0; i < bullets.length; i++) {
             bullets[i].update();

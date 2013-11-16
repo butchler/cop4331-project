@@ -30,8 +30,6 @@ var MainLoop = function () {
         contentManager.collision();
         contentManager.draw();
         
-        console.log("looping.");
-        
         if (document.getElementById("visibleElem").className == 'combat')
             window.requestAnimationFrame(loop);
     }

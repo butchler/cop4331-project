@@ -1,11 +1,20 @@
 var Player = function (engine) {  
     var type = 'player';
     var name = "ship";
+    
+    
     var speed = 0.5;
+    var hp = 100;
+    var shieldCapacity = 0;
+    var dmg = 50.0;
+    var bulletDmg = 10.0;
+    var timer = 300;
+    var rockets = 0;
     
     var alive = true;
     
     var model = engine.Graphics().createModel(name, this);
+    model.moveY(-30);
     
     var XBOUNDS = 50;
     var YBOUNDS = 40;
@@ -13,10 +22,8 @@ var Player = function (engine) {
     
     
     var hpBar = document.getElementById('hp');
-    var hp = 100;
-    var dmg = 50.0;
     
-    var timer = 300, prevTime = new Date().getTime();
+    var prevTime = new Date().getTime();
     
     
     
