@@ -33,5 +33,10 @@ var MainLoop = function () {
         if (document.getElementById("visibleElem").className == 'combat')
             window.requestAnimationFrame(loop);
     }
-    this.loop = loop;
+    
+    
+    this.roundStart = function () {
+        contentManager.init();
+        loop();
+    }
 }

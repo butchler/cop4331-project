@@ -110,4 +110,9 @@ var Player = function (engine) {
         
         return !alive;
     }
+    
+    
+    this.destroy = function () {
+        engine.Graphics().destroyModel(model);
+    }
 }

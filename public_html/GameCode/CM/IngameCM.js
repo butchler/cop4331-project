@@ -44,7 +44,10 @@ var IngameCM = function (engine) {
     }
     
     this.init = function () {
+        player.destroy();
+        player = new Player(engine);
         
+        encounter = new EnemyWaveInfo(engine, 10);
     }
     
     function removeEntity(list, index) {
