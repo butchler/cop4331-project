@@ -15,6 +15,7 @@
         
         <!-- html specific -->
         <script src='progress.js'></script>
+        <script src='ShopItemInfo.js'></script>
         
         
         <!-- Controls -->
@@ -58,27 +59,66 @@
             var game;
             var globals = new Object();
             
-            globals.vis = "world";
-            globals.lock = "unlocked";
-            globals.difficulty = 1;
+            globals.healthBase = 100;
+            globals.rocketCapBase = 1;
+            globals.damageBase = 10;
+            globals.speedBase = 100;
+            globals.rateBase = 2;
+            
             
             function main() {
+                init();
                 game = new MainLoop();
             }
             
             
-            function swapVisible(elem) {
-                //var lock = document.getElementById("combatLock");
+            // read from a file, and what not
+            function init() {
+                globals.vis = "world";
+                globals.lock = "unlocked";
                 
+                // controls difficulty of the enemy wave
+                globals.difficulty = 1;
+                
+                globals.rockets = 0;
+                
+                // gold on the player
+                setGold(30000);
+                
+                
+                globals.health = new ShopItemInfo('health', 25, 50, 1);
+                globals.rocketCap = new ShopItemInfo('rocketCap', 25, 1, 1);
+                globals.damage = new ShopItemInfo('damage', 25, 10, 1);
+                globals.speed = new ShopItemInfo('speed', 25, 20, 1);
+                globals.rate = new ShopItemInfo('rate', 25, 1, 1);
+            }
+            
+            
+            function refillHealth() {
+                var hp = document.getElementById("hp");
+                
+                if (globals.gold >= 50) {
+                    progress(hp, '100%');
+                    setGold(globals.gold - 50);
+                }
+            }
+            
+            function addRockets() {
+                if (globals.rockets < globals.rocketCap.getIncrease() 
+                    && globals.gold >= 50) {
+                    setRockets(globals.rockets + 1);
+                    setGold(globals.gold - 50);
+                }
+            }
+            
+            function swapVisible(elem) {                
                 if (globals.lock == "unlocked") {
-                    //var vis = document.getElementById("visibleElem");
                     var hide = document.getElementById(globals.vis);
                     var show = document.getElementById(elem.className);
                     hide.style.display = 'none';
                     show.style.display = 'block';
                     
                     globals.vis = elem.className;
-                    //vis.className = elem.className;
 
                     if (elem.className == 'combat') {
                         startRound();
@@ -88,6 +128,7 @@
             }
             
             
+            // starts the games round
             function startRound() {
                 game.roundStart();
             }
@@ -177,12 +218,10 @@
                                     </td>
                                     <td>Rockets</td>
                                     <td>
-                                        <div id="rockets">0/1</div>
+                                        <div id="rockets">0</div>
                                     </td>
                                     <td>Gold:</td>
-                                    <td>0</td>
-                                    <td>Metal:</td>
-                                    <td>0</td>
+                                    <td><div id='gold'></div></td>
                                 </tr>
                             </table>
                         </div>
@@ -202,106 +241,123 @@
                         <div id="shop" class="wide" style="display: none;">
                             <table class="wide">
                                 <tr>
-                                    <td colspan="4">
+                                    <td colspan="5">
                                         <h2>Shop</h2>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="4">
+                                    <td colspan="5">
                                         <h3>Refills</h3>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button>Repair</button>
+                                        <button onclick='refillHealth();'>Repair</button>
                                     </td>
                                     <td>
                                         <div id="repairCost">50</div>g
                                     </td>
+                                    <td></td>
                                     <td>
-                                        <button>Rockets</button>
+                                        <button onclick='addRockets();'>Rockets</button>
                                     </td>
                                     <td>
                                         <div id="rocketCost">50</div>g
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="4"><h3>Upgrades</h3></td>
+                                    <td colspan="5"><h3>Upgrades</h3></td>
                                 </tr>
                                 <tr>
                                     <td><h4>Type</h4></td>
                                     <td><h4>Cost</h4></td>
+                                    <td><h4>Current</h4></td>
                                     <td><h4>Increase</h4></td>
                                     <td><h4>Level</h4></td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button id="health">Health</button>
+                                        <button id="health" onclick="globals.health.levelUp();">Health</button>
                                     </td>
                                     <td>
-                                        <div id="healthCost">25</div>g
+                                        <div id="healthCost"></div>g
                                     </td>
                                     <td>
-                                        +<div id="healthInc">50</div> hp
+                                        <div id='healthCur'></div>
                                     </td>
                                     <td>
-                                        <div id="healthLvl">1</div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <button id="rocketCap">Rocket Capacity</button>
+                                        +<div id="healthInc"></div> hp
                                     </td>
                                     <td>
-                                        <div id="rocketCapCost">25</div>g
-                                    </td>
-                                    <td>
-                                        +<div id="rocketCapInc">1</div> rocket Capacity
-                                    </td>
-                                    <td>
-                                        <div id="rocketCapLvl">1</div>
+                                        <div id="healthLvl"></div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button id="damage">Damage</button>
+                                        <button id="rocketCap" onclick="globals.rocketCap.levelUp();">Rocket Capacity</button>
                                     </td>
                                     <td>
-                                        <div id="damageCost">25</div>g
+                                        <div id="rocketCapCost"></div>g
                                     </td>
                                     <td>
-                                        +<div id="damageInc">10</div> damage
+                                        <div id='rocketCapCur'></div>
                                     </td>
                                     <td>
-                                        <div id="damageLvl">1</div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <button id="speed">Movement Speed</button>
+                                        +<div id="rocketCapInc"></div> rocket Capacity
                                     </td>
                                     <td>
-                                        <div id="speedCost">25</div>g
-                                    </td>
-                                    <td>
-                                        +<div id="speedInc">20</div>% base speed
-                                    </td>
-                                    <td>
-                                        <div id="speedLvl">1</div>
+                                        <div id="rocketCapLvl"></div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button id="rate">Fire Rate</button>
+                                        <button id="damage" onclick="globals.damage.levelUp();">Damage</button>
                                     </td>
                                     <td>
-                                        <div id="rateCost">25</div>g
+                                        <div id="damageCost"></div>g
                                     </td>
                                     <td>
-                                        +<div id="rateInc">1</div> bullet per second
+                                        <div id='damageCur'></div>
                                     </td>
                                     <td>
-                                        <div id="rateLvl">1</div>
+                                        +<div id="damageInc"></div> damage
+                                    </td>
+                                    <td>
+                                        <div id="damageLvl"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="speed" onclick="globals.speed.levelUp();">Movement Speed</button>
+                                    </td>
+                                    <td>
+                                        <div id="speedCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='speedCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="speedInc"></div>% base speed
+                                    </td>
+                                    <td>
+                                        <div id="speedLvl"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="rate" onclick="globals.rate.levelUp();">Fire Rate</button>
+                                    </td>
+                                    <td>
+                                        <div id="rateCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='rateCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="rateInc"></div> bullet per second
+                                    </td>
+                                    <td>
+                                        <div id="rateLvl"></div>
                                     </td>
                                 </tr>
                             </table>
