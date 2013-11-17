@@ -161,6 +161,12 @@
 
                     var target = $(this).attr('data-target');
 
+                    
+                    if (target == '#save') {
+                        globals.user.save();
+                        target = '#world';
+                    }
+
                     // Hide all modes.
                     $('.mode').hide();
                     // Show new mode specified in data-target attribute.
@@ -168,7 +174,8 @@
 
                     if (target == '#combat') {
                         // Doesn't do anything anymore, I guess.
-                    } else if (target == '#world') {
+                    } else if (target == '#world' || target == '#save') {
+                        
                         // Hide all levels except for the first/top-most one by default.
                         $('.level').hide();
                         $('#world > .level').show();
@@ -276,7 +283,7 @@
                     <td><img src='Content/Images/world.png' data-target="#world" /></td>
                     <td><img src='Content/Images/shop.png' data-target="#shop" /></td>
                     <td><img src='Content/Images/combat.png' data-target="#combat" /></td>
-                    <td>Save</td>
+                    <td><img src='Content/Images/combat.png' data-target="#save" /></td>
                 </tr>
                 <tr>
                     <!-- info bar -->
