@@ -5,6 +5,7 @@ var Bullet = function (engine, pos) {
     var dmg = 10.0;
     
     var MAX_BULLET_HEIGHT = 50;
+    var MAX_BULLET_WIDTH = 60;
     
     
     var model = engine.Graphics().createModel(name, this);
