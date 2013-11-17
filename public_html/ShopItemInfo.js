@@ -8,8 +8,8 @@ var ShopItemInfo = function (name, Cost, Inc, Lvl) {
     setValues();
     
     this.levelUp = function () {
-        if (globals.gold >= cost && level <= 5) {
-            setGold(globals.gold - cost);
+        if (globals.user.gold >= cost && level <= 5) {
+            setGold(globals.user.gold - cost);
             
             level++;
             cost *= 5;

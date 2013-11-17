@@ -11,7 +11,7 @@ var MainLoop = function () {
     
     var engine = new Engine(gl);
     
-    var contentManager;
+    var contentManager = new ContentManager(engine);
     var user = new User();
     user.load();
     globals.user = user;
@@ -39,7 +39,6 @@ var MainLoop = function () {
     
     
     this.roundStart = function () {
-        contentManager = new ContentManager(engine);
         contentManager.init();
         loop();
     }

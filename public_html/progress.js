@@ -5,7 +5,7 @@ function progress(elem, perc) {
 function setGold(gold) {
     var g = document.getElementById("gold");
     g.innerHTML = gold;
-    globals.gold = gold;
+    globals.user.gold = gold;
 }
 
 function setRockets(count) {

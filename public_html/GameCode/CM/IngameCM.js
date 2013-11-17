@@ -47,14 +47,10 @@ var IngameCM = function (engine) {
     
     
     function loseCondition () {
-        globals.lock = "unlocked";
-        
-        var hide = document.getElementById("combat");
-        var show = document.getElementById("world");
-        hide.style.display = 'none';
-        show.style.display = 'block';
+        globals.inCombat = false;
 
-        globals.vis = "world";
+        // Go to the world map by clicking on the world map button.
+        $("#nav img[data-target='#world']").click();
         
         alert("You lost, maybe next time!");
     }

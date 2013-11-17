@@ -100,23 +100,19 @@
             globals.shield = 0;
 
             function main() {
-                init();
                 game = new MainLoop();
+                init();
             }
             
             // read from a file, and what not
             function init() {
-                globals.vis = "world";
-                globals.lock = "unlocked";
                 
                 // controls difficulty of the enemy wave
                 globals.difficulty = 1;
                 
                 globals.rockets = 0;
                 
-                // gold on the player
-                setGold(30000);
-                
+                setGold(globals.user.gold);
                 
                 globals.health = new ShopItemInfo('health', 25, 50, 1);
                 globals.rocketCap = new ShopItemInfo('rocketCap', 25, 1, 1);
@@ -129,18 +125,18 @@
             function refillHealth() {
                 var hp = document.getElementById("hp");
                 
-                if (globals.gold >= 50) {
+                if (globals.user.gold >= 50) {
                     progress(hp, '100%');
                     globals.currentHealth = globals.healthStat;
-                    setGold(globals.gold - 50);
+                    setGold(globals.user.gold - 50);
                 }
             }
             
             function addRockets() {
                 if (globals.rockets < globals.rocketCap.getIncrease() 
-                    && globals.gold >= 50) {
+                    && globals.user.gold >= 50) {
                     setRockets(globals.rockets + 1);
-                    setGold(globals.gold - 50);
+                    setGold(globals.user.gold - 50);
                 }
             }
 
