@@ -184,7 +184,7 @@
                 });
 
                 // Handle when the user clicks on a level in the world map.
-                $('#world').on('click', '.level', function(event) {
+                $('#world').on('click', '.level-info', function(event) {
                     // Only handle for innermost level clicked.
                     event.stopPropagation();
 
@@ -214,19 +214,6 @@
             .wide
             {
                 width: 800px;
-            }
-            /* TODO: Make levels prettier in world map. */
-            .level
-            {
-                padding-left: 2em;
-            }
-            .level .difficulty:before
-            {
-                content: "Difficulty: ";
-            }
-            .level .gold:before
-            {
-                content: "Gold: ";
             }
             .hp
             {
@@ -269,6 +256,62 @@
             table.wide tr td div
             {
                 display: inline;
+            }
+
+            /* Styling for world map. */
+            #world
+            {
+                position: relative;
+            }
+            .level
+            {
+                position: absolute;
+            }
+            .level-info
+            {
+                position: relative;
+                width: 130px;
+                height: 100px;
+                cursor: pointer;
+                font-size: 0.95em;
+            }
+            /* When user hovers over level info, increase size of planet a little. */
+            .level-info:hover
+            {
+                left: -5px;
+                top: -5px;
+                width: 150px;
+                height: 120px;
+            }
+            /* Position gold and difficulty indicators at bottom right of planet. */
+            .level .difficulty, .level .gold
+            {
+                position: absolute;
+                right: 0;
+            }
+            .level .difficulty
+            {
+                bottom: 10px;
+                color: red;
+            }
+            .level .gold
+            {
+                bottom: 30px;
+                color: gold;
+            }
+            .level .difficulty:before
+            {
+                content: "Difficulty: ";
+            }
+            .level .gold:before
+            {
+                content: "Gold: ";
+            }
+            /* Make planet take up the full height of its container, but keep its aspect ratio. */
+            .level .planet
+            {
+                height: 100%;
+                width: auto;
             }
         </style>
     </head>
@@ -323,55 +366,88 @@
                                 to start that level. At first, you can only see
                                 the first level, but more lines will become
                                 visible as you beat levels.</p>
-                            <div class="level">
-                                <span class="difficulty">1.0</span>
-                                <span class="gold">100</span>
+                            <div class="level" style="top: 50px; left: 0;">
+                                <div class="level-info">
+                                    <span class="difficulty">1.0</span>
+                                    <span class="gold">100</span>
+                                    <img class="planet" src="Content/Images/red-planet.jpg" />
+                                </div>
 
-                                <div class="level">
-                                    <span class="difficulty">2.0</span>
-                                    <span class="gold">200</span>
+                                <div class="level" style="top: 25px; left: 200px;">
+                                    <div class="level-info">
+                                        <span class="difficulty">2.0</span>
+                                        <span class="gold">200</span>
+                                        <img class="planet" src="Content/Images/yellow-planet.jpg" />
+                                    </div>
 
-                                    <div class="level">
-                                        <span class="difficulty">3.0</span>
-                                        <span class="gold">400</span>
+                                    <div class="level" style="top: -10px; left: 200px;">
+                                        <div class="level-info">
+                                            <span class="difficulty">3.0</span>
+                                            <span class="gold">400</span>
+                                            <img class="planet" src="Content/Images/blue-planet.jpg" />
+                                        </div>
 
-                                        <div class="level">
-                                            <span class="difficulty">5.0</span>
-                                            <span class="gold">600</span>
-
-                                            <div class="level">
-                                                <span class="difficulty">7.5</span>
-                                                <span class="gold">1000</span>
+                                        <div class="level" style="top: 100px; left: 200px;">
+                                            <div class="level-info">
+                                                <span class="difficulty">5.0</span>
+                                                <span class="gold">600</span>
+                                                <img class="planet" src="Content/Images/grey-planet.jpg" />
                                             </div>
 
-                                            <div class="level">
-                                                <span class="difficulty">9.5</span>
-                                                <span class="gold">2000</span>
+                                            <div class="level" style="top: 50px; left: -200px;">
+                                                <div class="level-info">
+                                                    <span class="difficulty">7.5</span>
+                                                    <span class="gold">1000</span>
+                                                    <img class="planet" src="Content/Images/yellow-planet.jpg" />
+                                                </div>
+                                            </div>
+
+                                            <div class="level" style="top: -50px; left: 200px;">
+                                                <div class="level-info">
+                                                    <span class="difficulty">9.5</span>
+                                                    <span class="gold">2000</span>
+                                                    <img class="planet" src="Content/Images/blue-planet.jpg" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="level">
-                                    <span class="difficulty">4.0</span>
-                                    <span class="gold">500</span>
+                                <div class="level" style="top: 200px; left: 50px;">
+                                    <div class="level-info">
+                                        <span class="difficulty">4.0</span>
+                                        <span class="gold">500</span>
+                                        <img class="planet" src="Content/Images/blue-planet.jpg" />
+                                    </div>
 
-                                    <div class="level">
-                                        <span class="difficulty">6.0</span>
-                                        <span class="gold">1000</span>
-
-                                        <div class="level">
-                                           <span class="difficulty">7.0</span>
-                                            <span class="gold">1500</span>
+                                    <div class="level" style="top: 80px; left: 150px;">
+                                        <div class="level-info">
+                                            <span class="difficulty">6.0</span>
+                                            <span class="gold">1000</span>
+                                            <img class="planet" src="Content/Images/red-planet.jpg" />
                                         </div>
 
-                                        <div class="level">
-                                            <span class="difficulty">9.0</span>
-                                            <span class="gold">2000</span>
+                                        <div class="level" style="top: 40px; left: 250px;">
+                                            <div class="level-info">
+                                                <span class="difficulty">7.0</span>
+                                                <span class="gold">1500</span>
+                                                <img class="planet" src="Content/Images/yellow-planet.jpg" />
+                                            </div>
+                                        </div>
 
-                                            <div class="level">
-                                                <span class="difficulty">10.0</span>
-                                                <span class="gold">3000</span>
+                                        <div class="level" style="top: 150px; left: -80px;">
+                                            <div class="level-info">
+                                                <span class="difficulty">9.0</span>
+                                                <span class="gold">2000</span>
+                                                <img class="planet" src="Content/Images/grey-planet.jpg" />
+                                            </div>
+
+                                            <div class="level" style="top: 10px; left: 220px;">
+                                                <div class="level-info">
+                                                    <span class="difficulty">10.0</span>
+                                                    <span class="gold">3000</span>
+                                                    <img class="planet" src="Content/Images/red-planet.jpg" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
