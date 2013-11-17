@@ -95,9 +95,6 @@
             globals.damageBase = 10;
             globals.speedBase = 100;
             globals.rateBase = 2;
-            
-            globals.currentHealth = 100;
-            globals.shield = 0;
 
             function main() {
                 game = new MainLoop();
@@ -111,6 +108,8 @@
                 globals.difficulty = 1;
                 
                 globals.rockets = 0;
+                globals.currentHealth = 100;
+                globals.shield = 0;
                 
                 setGold(globals.user.gold);
                 
