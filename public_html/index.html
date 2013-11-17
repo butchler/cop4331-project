@@ -193,7 +193,7 @@
                     globals.level = {
                         difficulty: parseFloat($this.children('.difficulty').text()),
                         gold: parseInt($this.children('.gold').text()),
-                        selector: $this.getPath()
+                        selector: $this.parent().getPath()
                     };
 
                     startRound();
