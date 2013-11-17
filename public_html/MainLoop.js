@@ -37,6 +37,7 @@ var MainLoop = function () {
     
     this.roundStart = function () {
         contentManager.init();
+        engine.Messages().reset();
         loop();
     }
 }
