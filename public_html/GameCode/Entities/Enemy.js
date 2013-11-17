@@ -80,6 +80,5 @@ var Enemy = function (engine, health, damage, entrypoint) {
     
     this.destroy = function () {
         engine.Graphics().destroyModel(model);
-        console.log("destroyed");
     }
 }

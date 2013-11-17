@@ -28,7 +28,9 @@ var IngameCM = function (engine) {
     }
     
     this.collision = function() {
-        player.collision();
+        // lose condition
+        if (player.collision())
+            loseCondition();
         
         for (var i = 0; i < enemies.length; i++) {
             if (enemies[i].collision()) {
@@ -42,6 +44,21 @@ var IngameCM = function (engine) {
             }
         }
     }
+    
+    
+    function loseCondition () {
+        globals.lock = "unlocked";
+        
+        var hide = document.getElementById("combat");
+        var show = document.getElementById("world");
+        hide.style.display = 'none';
+        show.style.display = 'block';
+
+        globals.vis = "world";
+        
+        alert("You lost, maybe next time!");
+    }
+    
     
     this.init = function () {
         player.destroy();
