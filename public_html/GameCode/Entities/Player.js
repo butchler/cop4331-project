@@ -96,14 +96,14 @@ var Player = function (engine) {
             var obj = cols[i].getObj();
             
             if (obj.getName() != 'bullet' && obj.getDamage !== undefined) {
-                globals.currentHealth -= obj.getDamage();
+                globals.user.currentHealth -= obj.getDamage();
                 
-                progress(hpBar, (globals.currentHealth / maxhp) * 100 + '%');
+                progress(hpBar, (globals.user.currentHealth / maxhp) * 100 + '%');
             }
         }
         
         
-        if (globals.currentHealth <= 0)
+        if (globals.user.currentHealth <= 0)
             alive = false;
         
         return !alive;

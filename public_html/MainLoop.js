@@ -12,9 +12,6 @@ var MainLoop = function () {
     var engine = new Engine(gl);
     
     var contentManager = new ContentManager(engine);
-    var user = new User();
-    user.load();
-    globals.user = user;
     
     
     // prepare the rendering screen

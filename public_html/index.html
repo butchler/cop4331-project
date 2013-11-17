@@ -103,21 +103,16 @@
             
             // read from a file, and what not
             function init() {
-                
-                // controls difficulty of the enemy wave
-                globals.difficulty = 1;
-                
-                globals.rockets = 0;
-                globals.currentHealth = 100;
-                globals.shield = 0;
-                
+                globals.user = new User();
+                // These need to be set outside of the User class because ShopItemInfo depends on global.user.
+                globals.user.health = new ShopItemInfo('health', 25, 50, 1);
+                globals.user.rocketCap = new ShopItemInfo('rocketCap', 25, 1, 1);
+                globals.user.damage = new ShopItemInfo('damage', 25, 10, 1);
+                globals.user.speed = new ShopItemInfo('speed', 25, 20, 1);
+                globals.user.rate = new ShopItemInfo('rate', 25, 1, 1);
+                globals.user.load();
+
                 setGold(globals.user.gold);
-                
-                globals.health = new ShopItemInfo('health', 25, 50, 1);
-                globals.rocketCap = new ShopItemInfo('rocketCap', 25, 1, 1);
-                globals.damage = new ShopItemInfo('damage', 25, 10, 1);
-                globals.speed = new ShopItemInfo('speed', 25, 20, 1);
-                globals.rate = new ShopItemInfo('rate', 25, 1, 1);
             }
             
             
@@ -126,15 +121,15 @@
                 
                 if (globals.user.gold >= 50) {
                     progress(hp, '100%');
-                    globals.currentHealth = globals.healthStat;
+                    globals.user.currentHealth = globals.healthStat;
                     setGold(globals.user.gold - 50);
                 }
             }
             
             function addRockets() {
-                if (globals.rockets < globals.rocketCap.getIncrease() 
+                if (globals.user.rockets < globals.user.rocketCap.getIncrease() 
                     && globals.user.gold >= 50) {
-                    setRockets(globals.rockets + 1);
+                    setRockets(globals.user.rockets + 1);
                     setGold(globals.user.gold - 50);
                 }
             }
@@ -195,9 +190,11 @@
 
                     var $this = $(this);
 
-                    globals.difficulty = parseFloat($this.children('.difficulty').text());
-                    globals.levelGold = parseInt($this.children('.gold').text());
-                    globals.levelSelector = $this.getPath();
+                    globals.level = {
+                        difficulty: parseFloat($this.children('.difficulty').text()),
+                        gold: parseInt($this.children('.gold').text()),
+                        selector: $this.getPath()
+                    };
 
                     startRound();
                 });
@@ -364,7 +361,7 @@
                                         <span class="gold">1000</span>
 
                                         <div class="level">
-                                            <span class="difficulty">7.0</span>
+                                           <span class="difficulty">7.0</span>
                                             <span class="gold">1500</span>
                                         </div>
 
@@ -420,7 +417,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button id="health" onclick="globals.health.levelUp();">Health</button>
+                                        <button id="health" onclick="globals.user.health.levelUp();">Health</button>
                                     </td>
                                     <td>
                                         <div id="healthCost"></div>g
@@ -437,7 +434,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button id="rocketCap" onclick="globals.rocketCap.levelUp();">Rocket Capacity</button>
+                                        <button id="rocketCap" onclick="globals.user.rocketCap.levelUp();">Rocket Capacity</button>
                                     </td>
                                     <td>
                                         <div id="rocketCapCost"></div>g
@@ -454,7 +451,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button id="damage" onclick="globals.damage.levelUp();">Damage</button>
+                                        <button id="damage" onclick="globals.user.damage.levelUp();">Damage</button>
                                     </td>
                                     <td>
                                         <div id="damageCost"></div>g
@@ -471,7 +468,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button id="speed" onclick="globals.speed.levelUp();">Movement Speed</button>
+                                        <button id="speed" onclick="globals.user.speed.levelUp();">Movement Speed</button>
                                     </td>
                                     <td>
                                         <div id="speedCost"></div>g
@@ -488,7 +485,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button id="rate" onclick="globals.rate.levelUp();">Fire Rate</button>
+                                        <button id="rate" onclick="globals.user.rate.levelUp();">Fire Rate</button>
                                     </td>
                                     <td>
                                         <div id="rateCost"></div>g
