@@ -3,7 +3,7 @@ var IngameCM = function (engine) {
     var enemies = [];
     var bullets = [];
     
-    var encounter = new EnemyWaveInfo(engine);
+    var encounter;
     
     this.draw = function () {
         player.draw();

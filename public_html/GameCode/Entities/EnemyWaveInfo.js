@@ -1,5 +1,5 @@
 var EnemyWaveInfo = function (engine) {
-    var difficulty = globals.difficulty * 10;
+    var difficulty = globals.level.difficulty * 10;
 
     var spawnTimer = (1000 / difficulty) + 50;
     var prevTime = new Date().getTime();
@@ -44,9 +44,9 @@ var EnemyWaveInfo = function (engine) {
         globals.inCombat = false;
 
         // Save the fact that the user beat this level.
-        globals.user.beatenLevels.push(globals.levelSelector);
+        globals.user.beatenLevels.push(globals.level.selector);
         // Give the user the gold they earned.
-        setGold(globals.user.gold + globals.levelGold);
+        setGold(globals.user.gold + globals.level.gold);
 
         // Go to the world map by clicking on the world map button.
         $("#nav img[data-target='#world']").click();

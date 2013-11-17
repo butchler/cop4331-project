@@ -48,8 +48,18 @@ var ShopItemInfo = function (name, Cost, Inc, Lvl) {
         
         if (item == 'health') {
             var hpBar = document.getElementById('hp');
-            progress(hpBar, (globals.currentHealth / globals.healthStat) * 100 + '%');
+            progress(hpBar, (globals.user.currentHealth / globals.healthStat) * 100 + '%');
         }
     }
     this.setValues = setValues;
+
+    // Used to save the information stored in this ShopItemInfo object, for saving/loading.
+    this.getValues = function () {
+        return {
+            type: 'ShopItemInfo',
+            cost: cost,
+            increase: increase,
+            level: level
+        };
+    }
 }

@@ -11,5 +11,5 @@ function setGold(gold) {
 function setRockets(count) {
     var r = document.getElementById('rockets');
     r.innerHTML = count;
-    globals.rockets = count;
+    globals.user.rockets = count;
 }
