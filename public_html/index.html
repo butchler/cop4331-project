@@ -114,7 +114,7 @@
                 }
             }
             
-            function swapVisible(elem) {                
+            function swapVisible(elem) {       
                 if (globals.lock == "unlocked") {
                     var hide = document.getElementById(globals.vis);
                     var show = document.getElementById(elem.className);
@@ -124,8 +124,8 @@
                     globals.vis = elem.className;
 
                     if (elem.className == 'combat') {
-                        startRound();
                         globals.lock = 'locked';
+                        startRound();
                     }
                 }
             }
