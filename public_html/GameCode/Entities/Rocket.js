@@ -1,8 +1,9 @@
-var Bullet = function (engine, pos) {
+var Rocket = function (engine, pos) {
     var type = 'ally';
-    var name = "sphere";
-    var speed = 2.0;
-    var dmg = 10.0;
+    var name = 'ship';
+    
+    var speed = 1.5;
+    var dmg = 50.0;
     
     var MAX_BULLET_HEIGHT = 50;
     var MAX_BULLET_WIDTH = 60;
