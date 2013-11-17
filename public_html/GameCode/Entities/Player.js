@@ -1,5 +1,5 @@
 var Player = function (engine) {  
-    var type = 'player';
+    var type = 'ally';
     var name = "ship";
     
     
@@ -21,7 +21,8 @@ var Player = function (engine) {
     var YBOUNDS = 40;
     
     
-    var prevTime = new Date().getTime();
+    var prevBulletTime = new Date().getTime();
+    var prevRocketTime = new Date().getTime();
     
     
     
@@ -50,19 +51,23 @@ var Player = function (engine) {
     this.isShooting = function(list) {
         if (engine.Messages().getMessage(" ") == "down" && canCreateBullet()) {
             list.push(new Bullet(engine, model.getPosition()));
-            prevTime = new Date().getTime();
+            prevBulletTime = new Date().getTime();
+        }
+        if (engine.Messages().getMessage("Q") == "down" 
+                && globals.user.rockets > 0
+                && canCreateMissile()) {
+            list.push(new Rocket(engine, model.getPosition()));
+            prevRocketTime = new Date().getTime();
+            setRockets(globals.user.rockets - 1);
         }
     }
     
     function canCreateBullet() {
-        var canCreate = false;
-        var curTime = new Date().getTime();
-        
-        if (curTime - prevTime > timer) {
-            canCreate = true;
-        }
-        
-        return canCreate;
+        return (new Date().getTime() - prevBulletTime) > timer;
+    }
+    
+    function canCreateMissile() {
+        return (new Date().getTime() - prevRocketTime) > timer;
     }
     
     this.getModel = function() {
@@ -95,7 +100,7 @@ var Player = function (engine) {
         for (var i = 0; i < cols.length; i++) {
             var obj = cols[i].getObj();
             
-            if (obj.getName() != 'bullet' && obj.getDamage !== undefined) {
+            if (obj.getName() != 'ally' && obj.getDamage !== undefined) {
                 globals.user.currentHealth -= obj.getDamage();
                 
                 progress(hpBar, (globals.user.currentHealth / maxhp) * 100 + '%');
