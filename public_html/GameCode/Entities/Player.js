@@ -11,6 +11,7 @@ var Player = function (engine) {
     var dmg = 50.0;
     var bulletDmg = globals.damageStat;
     var timer = 1000 / globals.rateStat;
+    var direction = [0, 1];
     
     var alive = true;
     
@@ -48,15 +49,21 @@ var Player = function (engine) {
             model.moveX(speed);
     }
     
-    this.isShooting = function(list) {
+    this.isShooting = function(bullets, rockets) {
         if (engine.Messages().getMessage(" ") == "down" && canCreateBullet()) {
-            list.push(new Bullet(engine, model.getPosition()));
+            
+            bullets.push(new Bullet(engine, model.getPosition(), 
+                bulletDmg, type, direction));
+                
             prevBulletTime = new Date().getTime();
         }
         if (engine.Messages().getMessage("Q") == "down" 
                 && globals.user.rockets > 0
                 && canCreateMissile()) {
-            list.push(new Rocket(engine, model.getPosition()));
+            
+            rockets.push(new Rocket(engine, model.getPosition(),
+                50.0, type, direction));
+            
             prevRocketTime = new Date().getTime();
             setRockets(globals.user.rockets - 1);
         }
@@ -100,7 +107,7 @@ var Player = function (engine) {
         for (var i = 0; i < cols.length; i++) {
             var obj = cols[i].getObj();
             
-            if (obj.getName() != 'ally' && obj.getDamage !== undefined) {
+            if (obj.getName() != type && obj.getDamage !== undefined) {
                 globals.user.currentHealth -= obj.getDamage();
                 
                 progress(hpBar, (globals.user.currentHealth / maxhp) * 100 + '%');

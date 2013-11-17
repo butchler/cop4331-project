@@ -1,8 +1,9 @@
-var Bullet = function (engine, pos) {
-    var type = 'ally';
+var Bullet = function (engine, pos, damage, side, dir) {
+    var type = side;
     var name = "sphere";
     var speed = 2.0;
-    var dmg = 10.0;
+    var dmg = damage;
+    var direction = dir;
     
     var MAX_BULLET_HEIGHT = 50;
     var MAX_BULLET_WIDTH = 60;
@@ -17,7 +18,8 @@ var Bullet = function (engine, pos) {
     
     
     this.update = function () {
-        model.moveY(speed);
+        model.moveY(dir[1] * speed);
+        model.moveX(dir[0] * speed);
     }
     
     this.collision = function () {
@@ -28,7 +30,7 @@ var Bullet = function (engine, pos) {
         for (var i = 0; i < cols.length; i++) {
             var obj = cols[i].getObj();
             
-            if (obj.getName() !== 'ally') {
+            if (obj.getName() !== type) {
                 isDestroyed = true;
             }
         }
@@ -37,7 +39,10 @@ var Bullet = function (engine, pos) {
     }
     
     this.isOutside = function () {
-        return model.getPosition()[1] > MAX_BULLET_HEIGHT;
+        return model.getPosition()[1] > MAX_BULLET_HEIGHT 
+                || model.getPosition()[1] < -MAX_BULLET_HEIGHT
+                || model.getPosition()[0] > MAX_BULLET_WIDTH
+                || model.getPosition()[0] < -MAX_BULLET_WIDTH;
     }
     
     

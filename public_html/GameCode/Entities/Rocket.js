@@ -1,9 +1,14 @@
-var Rocket = function (engine, pos) {
-    var type = 'ally';
+var Rocket = function (engine, pos, damage, side, dir) {
+    var type = side;
     var name = 'ship';
     
     var speed = 1.5;
-    var dmg = 50.0;
+    var dmg = damage;
+    
+    var direction = dir;
+    
+    var bulletDirs = [[0, 1],[0, -1], [0.707, 0.707], [0.707, -0.707],
+                    [-0.707, 0.707],[-0.707, -0.707], [1, 0], [-1, 0]];
     
     var MAX_BULLET_HEIGHT = 50;
     var MAX_BULLET_WIDTH = 60;
@@ -18,10 +23,11 @@ var Rocket = function (engine, pos) {
     
     
     this.update = function () {
-        model.moveY(speed);
+        model.moveY(direction[1] * speed);
+        model.moveX(direction[0] * speed);
     }
     
-    this.collision = function () {
+    this.collision = function (bullets) {
         var isDestroyed = false;
         
         var cols = model.getCollisions();
@@ -29,16 +35,26 @@ var Rocket = function (engine, pos) {
         for (var i = 0; i < cols.length; i++) {
             var obj = cols[i].getObj();
             
-            if (obj.getName() !== 'ally') {
+            if (obj.getName() !== type) {
                 isDestroyed = true;
             }
         }
+        
+        if (isDestroyed) {
+            for (var i = 0; i < bulletDirs.length; i++) 
+                bullets.push(new Bullet(engine, model.getPosition(), 
+                    dmg / 5, type, bulletDirs[i]));
+        }
+        
         
         return isDestroyed;
     }
     
     this.isOutside = function () {
-        return model.getPosition()[1] > MAX_BULLET_HEIGHT;
+        return model.getPosition()[1] > MAX_BULLET_HEIGHT 
+                || model.getPosition()[1] < -MAX_BULLET_HEIGHT
+                || model.getPosition()[0] > MAX_BULLET_WIDTH
+                || model.getPosition()[0] < -MAX_BULLET_WIDTH;
     }
     
     

@@ -2,6 +2,7 @@ var IngameCM = function (engine) {
     var player = new Player(engine);
     var enemies = [];
     var bullets = [];
+    var rockets = [];
     
     var encounter;
     
@@ -11,12 +12,14 @@ var IngameCM = function (engine) {
         for (var i = 0; i < enemies.length; i++) enemies[i].draw();
         
         for (var i = 0; i < bullets.length; i++) bullets[i].draw();
+        
+        for (var i = 0; i < rockets.length; i++) rockets[i].draw();
     }
     
     this.update = function () {
         player.update();
         
-        player.isShooting(bullets);
+        player.isShooting(bullets, rockets);
         
         encounter.update(enemies);
         
@@ -24,6 +27,12 @@ var IngameCM = function (engine) {
             bullets[i].update();
             if (bullets[i].isOutside())
                 removeEntity(bullets, i);
+        }
+        
+        for (var i = 0; i < rockets.length; i++) {
+            rockets[i].update();
+            if (rockets[i].isOutside())
+                removeEntity(rockets, i);
         }
     }
     
@@ -41,6 +50,12 @@ var IngameCM = function (engine) {
         for (var i = 0; i < bullets.length; i++) {
             if (bullets[i].collision()) {
                 removeEntity(bullets, i);
+            }
+        }
+        
+        for (var i = 0; i < rockets.length; i++) {
+            if (rockets[i].collision(bullets)) {
+                removeEntity(rockets, i);
             }
         }
     }
@@ -61,6 +76,9 @@ var IngameCM = function (engine) {
         player = new Player(engine);
         
         encounter = new EnemyWaveInfo(engine);
+        
+        for (var i = 0; i < bullets.length; i++)
+            removeEntity(bullets, bullets.length - i - 1);
     }
     
     function removeEntity(list, index) {
