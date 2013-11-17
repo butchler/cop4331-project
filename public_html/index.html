@@ -5,7 +5,36 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         
         <!-- scripts -->
+        <script>var globals = {};</script>
+
         <!-- utils -->
+        <script src="Utils/jquery.min.js"></script>
+        <script type="text/javascript">
+            // Copied from this answer on Stack Overflow: http://stackoverflow.com/a/2068381
+            // Returns a jQuery selector that can be used to re-select the current jQuery element.
+            jQuery.fn.getPath = function () {
+                if (this.length != 1) throw 'Requires one element.';
+
+                var path, node = this;
+                while (node.length) {
+                    var realNode = node[0], name = realNode.localName;
+                    if (!name) break;
+                    name = name.toLowerCase();
+
+                    var parent = node.parent();
+
+                    var siblings = parent.children(name);
+                    if (siblings.length > 1) { 
+                        name += ':eq(' + siblings.index(realNode) + ')';
+                    }
+
+                    path = name + (path ? '>' + path : '');
+                    node = parent;
+                }
+
+                return path;
+            };
+        </script>
         <script src="Utils/cuon-matrix-v2.js"></script>
         <script src="Utils/cuon-utils.js"></script>
         <script src="Utils/webgl-debug.js"></script>
@@ -37,6 +66,8 @@
         
         <!-- Engine -->
         <script src='Engine/Engine.js'></script>
+
+        <script src="GameCode/User.js"></script>
         
         <!-- Entities -->
         <script src="GameCode/Entities/Enemy.js"></script>
@@ -67,12 +98,11 @@
             
             globals.currentHealth = 100;
             globals.shield = 0;
-            
+
             function main() {
                 init();
                 game = new MainLoop();
             }
-            
             
             // read from a file, and what not
             function init() {
@@ -113,28 +143,66 @@
                     setGold(globals.gold - 50);
                 }
             }
-            
-            function swapVisible(elem) {       
-                if (globals.lock == "unlocked") {
-                    var hide = document.getElementById(globals.vis);
-                    var show = document.getElementById(elem.className);
-                    hide.style.display = 'none';
-                    show.style.display = 'block';
-                    
-                    globals.vis = elem.className;
 
-                    if (elem.className == 'combat') {
-                        globals.lock = 'locked';
-                        startRound();
-                    }
-                }
-            }
-            
-            
             // starts the games round
             function startRound() {
+                $('.mode').hide();
+                $('#combat').show();
+
+                globals.inCombat = true;
+
                 game.roundStart();
             }
+
+            $(document).ready(function() {
+                main();
+
+                // When the user clicks on image in the nav bar, switch to that mode.
+                $('#nav').on('click', 'img', function(event) {
+                    // Don't let the user switch modes if they're in combat.
+                    if (globals.inCombat)
+                        return;
+
+                    var target = $(this).attr('data-target');
+
+                    // Hide all modes.
+                    $('.mode').hide();
+                    // Show new mode specified in data-target attribute.
+                    $(target).show();
+
+                    if (target == '#combat') {
+                        // Doesn't do anything anymore, I guess.
+                    } else if (target == '#world') {
+                        // Hide all levels except for the first/top-most one by default.
+                        $('.level').hide();
+                        $('#world > .level').show();
+
+                        globals.user.beatenLevels.forEach(function (levelSelector) {
+                            // Only show levels the user has already beaten,
+                            $(levelSelector).show();
+                            // and levels that are immediate descendents of ones the user has beaten.
+                            $(levelSelector + ' > .level').show();
+                        });
+                    }
+                });
+
+                // Handle when the user clicks on a level in the world map.
+                $('#world').on('click', '.level', function(event) {
+                    // Only handle for innermost level clicked.
+                    event.stopPropagation();
+
+                    var $this = $(this);
+
+                    globals.difficulty = parseFloat($this.children('.difficulty').text());
+                    globals.levelGold = parseInt($this.children('.gold').text());
+                    globals.levelSelector = $this.getPath();
+
+                    startRound();
+                });
+
+                // Show world map by default.
+                $("#nav img[data-target='#world']").click()
+            });
         </script>
         
         
@@ -147,6 +215,19 @@
             .wide
             {
                 width: 800px;
+            }
+            /* TODO: Make levels prettier in world map. */
+            .level
+            {
+                padding-left: 2em;
+            }
+            .level .difficulty:before
+            {
+                content: "Difficulty: ";
+            }
+            .level .gold:before
+            {
+                content: "Gold: ";
             }
             .hp
             {
@@ -192,13 +273,13 @@
             }
         </style>
     </head>
-    <body onload="main();">
+    <body>
         <div>
             <table>
-                <tr>
-                    <td><img src='Content/Images/world.png' class="world" onclick="swapVisible(this);" /></td>
-                    <td><img src='Content/Images/shop.png' class="shop" onclick="swapVisible(this);" /></td>
-                    <td><img src='Content/Images/combat.png' class="combat" onclick="swapVisible(this);" /></td>
+                <tr id="nav">
+                    <td><img src='Content/Images/world.png' data-target="#world" /></td>
+                    <td><img src='Content/Images/shop.png' data-target="#shop" /></td>
+                    <td><img src='Content/Images/combat.png' data-target="#combat" /></td>
                     <td>Save</td>
                 </tr>
                 <tr>
@@ -233,15 +314,72 @@
                 <tr>
                     <!-- body -->
                     <td colspan="4">
-                        <div id="combat" class="wide" style="display: none;">
+                        <div id="combat" class="wide mode">
                             <canvas id="canvas" style='border: 1px white solid;' width="800" height="600">
                                 <p>Your browser does not support HTML5 Canvas.</p>
                             </canvas>
                         </div>
-                        <div id="world" class="wide">
-                            in world view
+                        <div id="world" class="wide mode">
+                            <p>Each line below represents a level. Click a line
+                                to start that level. At first, you can only see
+                                the first level, but more lines will become
+                                visible as you beat levels.</p>
+                            <div class="level">
+                                <span class="difficulty">1.0</span>
+                                <span class="gold">100</span>
+
+                                <div class="level">
+                                    <span class="difficulty">2.0</span>
+                                    <span class="gold">200</span>
+
+                                    <div class="level">
+                                        <span class="difficulty">3.0</span>
+                                        <span class="gold">400</span>
+
+                                        <div class="level">
+                                            <span class="difficulty">5.0</span>
+                                            <span class="gold">600</span>
+
+                                            <div class="level">
+                                                <span class="difficulty">7.5</span>
+                                                <span class="gold">1000</span>
+                                            </div>
+
+                                            <div class="level">
+                                                <span class="difficulty">9.5</span>
+                                                <span class="gold">2000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="level">
+                                    <span class="difficulty">4.0</span>
+                                    <span class="gold">500</span>
+
+                                    <div class="level">
+                                        <span class="difficulty">6.0</span>
+                                        <span class="gold">1000</span>
+
+                                        <div class="level">
+                                            <span class="difficulty">7.0</span>
+                                            <span class="gold">1500</span>
+                                        </div>
+
+                                        <div class="level">
+                                            <span class="difficulty">9.0</span>
+                                            <span class="gold">2000</span>
+
+                                            <div class="level">
+                                                <span class="difficulty">10.0</span>
+                                                <span class="gold">3000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div id="shop" class="wide" style="display: none;">
+                        <div id="shop" class="wide mode">
                             <table class="wide">
                                 <tr>
                                     <td colspan="5">

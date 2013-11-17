@@ -3,7 +3,7 @@ var IngameCM = function (engine) {
     var enemies = [];
     var bullets = [];
     
-    var encounter = new EnemyWaveInfo(engine, 10.0);
+    var encounter = new EnemyWaveInfo(engine);
     
     this.draw = function () {
         player.draw();
@@ -64,7 +64,7 @@ var IngameCM = function (engine) {
         player.destroy();
         player = new Player(engine);
         
-        encounter = new EnemyWaveInfo(engine, globals.difficulty);
+        encounter = new EnemyWaveInfo(engine);
     }
     
     function removeEntity(list, index) {

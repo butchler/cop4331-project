@@ -11,7 +11,10 @@ var MainLoop = function () {
     
     var engine = new Engine(gl);
     
-    var contentManager = new ContentManager(engine);
+    var contentManager;
+    var user = new User();
+    user.load();
+    globals.user = user;
     
     
     // prepare the rendering screen
@@ -30,13 +33,13 @@ var MainLoop = function () {
         contentManager.collision();
         contentManager.draw();
         
-        
-        if (globals.vis == 'combat')
+        if (globals.inCombat)
             window.requestAnimationFrame(loop);
     }
     
     
     this.roundStart = function () {
+        contentManager = new ContentManager(engine);
         contentManager.init();
         loop();
     }
