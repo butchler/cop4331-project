@@ -1,5 +1,5 @@
 var GraphicsEngine = function (gl, collisionDetection) {
-    var camera = new Camera(gl, [50, 50, 50], [0, 1, 0]);
+    var camera = new Camera(gl, 150, [0, 1, 0]);
     var entityRepo = new EntityRepo(gl);
     
     // create the vertex shader
@@ -57,13 +57,13 @@ var GraphicsEngine = function (gl, collisionDetection) {
        return entityRepo;
    }
    
-    this.createModel = function (name, collision) {
+    this.createModel = function (name, obj, collision) {
         var entity;
         
         if (entityRepo.addEntity(name)) {            
             if (collision === undefined) collision = true;      
             
-            entity = new GraphicalEntity(name, collision, 0);
+            entity = new GraphicalEntity(obj, name, collision, 0);
             
             if (collision == true) {
                 // add to collision detection list in the physics engine

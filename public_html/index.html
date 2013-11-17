@@ -5,11 +5,47 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         
         <!-- scripts -->
+        <script>var globals = {};</script>
+
         <!-- utils -->
+        <script src="Utils/jquery.min.js"></script>
+        <script type="text/javascript">
+            // Copied from this answer on Stack Overflow: http://stackoverflow.com/a/2068381
+            // Returns a jQuery selector that can be used to re-select the current jQuery element.
+            jQuery.fn.getPath = function () {
+                if (this.length != 1) throw 'Requires one element.';
+
+                var path, node = this;
+                while (node.length) {
+                    var realNode = node[0], name = realNode.localName;
+                    if (!name) break;
+                    name = name.toLowerCase();
+
+                    var parent = node.parent();
+
+                    var siblings = parent.children(name);
+                    if (siblings.length > 1) { 
+                        name += ':eq(' + siblings.index(realNode) + ')';
+                    }
+
+                    path = name + (path ? '>' + path : '');
+                    node = parent;
+                }
+
+                return path;
+            };
+        </script>
         <script src="Utils/cuon-matrix-v2.js"></script>
         <script src="Utils/cuon-utils.js"></script>
         <script src="Utils/webgl-debug.js"></script>
         <script src="Utils/webgl-utils.js"></script>
+        
+        
+        
+        <!-- html specific -->
+        <script src='progress.js'></script>
+        <script src='ShopItemInfo.js'></script>
+        
         
         <!-- Controls -->
         <script src='Engine/Controls/Config.js'></script>
@@ -30,8 +66,13 @@
         
         <!-- Engine -->
         <script src='Engine/Engine.js'></script>
+
+        <script src="GameCode/User.js"></script>
         
         <!-- Entities -->
+        <script src="GameCode/Entities/Enemy.js"></script>
+        <script src="GameCode/Entities/EnemyWaveInfo.js"></script>
+        <script src="GameCode/Entities/Bullet.js"></script>
         <script src="GameCode/Entities/Player.js"></script>
         <script src="GameCode/Entities/Cube.js"></script>
         <script src="GameCode/Entities/Bullet.js"></script>
@@ -45,12 +86,430 @@
         
         <!-- Main Loop -->
         <script src="MainLoop.js"></script>
+        
+        
+        <script type="text/javascript">
+            var game;
+            var globals = new Object();
+            
+            globals.healthBase = 100;
+            globals.rocketCapBase = 1;
+            globals.damageBase = 10;
+            globals.speedBase = 100;
+            globals.rateBase = 2;
+
+            function main() {
+                game = new MainLoop();
+                init();
+            }
+            
+            // read from a file, and what not
+            function init() {
+                
+                // controls difficulty of the enemy wave
+                globals.difficulty = 1;
+                
+                globals.rockets = 0;
+                globals.currentHealth = 100;
+                globals.shield = 0;
+                
+                setGold(globals.user.gold);
+                
+                globals.health = new ShopItemInfo('health', 25, 50, 1);
+                globals.rocketCap = new ShopItemInfo('rocketCap', 25, 1, 1);
+                globals.damage = new ShopItemInfo('damage', 25, 10, 1);
+                globals.speed = new ShopItemInfo('speed', 25, 20, 1);
+                globals.rate = new ShopItemInfo('rate', 25, 1, 1);
+            }
+            
+            
+            function refillHealth() {
+                var hp = document.getElementById("hp");
+                
+                if (globals.user.gold >= 50) {
+                    progress(hp, '100%');
+                    globals.currentHealth = globals.healthStat;
+                    setGold(globals.user.gold - 50);
+                }
+            }
+            
+            function addRockets() {
+                if (globals.rockets < globals.rocketCap.getIncrease() 
+                    && globals.user.gold >= 50) {
+                    setRockets(globals.rockets + 1);
+                    setGold(globals.user.gold - 50);
+                }
+            }
+
+            // starts the games round
+            function startRound() {
+                $('.mode').hide();
+                $('#combat').show();
+
+                globals.inCombat = true;
+
+                game.roundStart();
+            }
+
+            $(document).ready(function() {
+                main();
+
+                // When the user clicks on image in the nav bar, switch to that mode.
+                $('#nav').on('click', 'img', function(event) {
+                    // Don't let the user switch modes if they're in combat.
+                    if (globals.inCombat)
+                        return;
+
+                    var target = $(this).attr('data-target');
+
+                    
+                    if (target == '#save') {
+                        globals.user.save();
+                        target = '#world';
+                    }
+
+                    // Hide all modes.
+                    $('.mode').hide();
+                    // Show new mode specified in data-target attribute.
+                    $(target).show();
+
+                    if (target == '#combat') {
+                        // Doesn't do anything anymore, I guess.
+                    } else if (target == '#world' || target == '#save') {
+                        
+                        // Hide all levels except for the first/top-most one by default.
+                        $('.level').hide();
+                        $('#world > .level').show();
+
+                        globals.user.beatenLevels.forEach(function (levelSelector) {
+                            // Only show levels the user has already beaten,
+                            $(levelSelector).show();
+                            // and levels that are immediate descendents of ones the user has beaten.
+                            $(levelSelector + ' > .level').show();
+                        });
+                    }
+                });
+
+                // Handle when the user clicks on a level in the world map.
+                $('#world').on('click', '.level', function(event) {
+                    // Only handle for innermost level clicked.
+                    event.stopPropagation();
+
+                    var $this = $(this);
+
+                    globals.difficulty = parseFloat($this.children('.difficulty').text());
+                    globals.levelGold = parseInt($this.children('.gold').text());
+                    globals.levelSelector = $this.getPath();
+
+                    startRound();
+                });
+
+                // Show world map by default.
+                $("#nav img[data-target='#world']").click()
+            });
+        </script>
+        
+        
+        <style>
+            body
+            {
+                background-color: black;
+                color: white;
+            }
+            .wide
+            {
+                width: 800px;
+            }
+            /* TODO: Make levels prettier in world map. */
+            .level
+            {
+                padding-left: 2em;
+            }
+            .level .difficulty:before
+            {
+                content: "Difficulty: ";
+            }
+            .level .gold:before
+            {
+                content: "Gold: ";
+            }
+            .hp
+            {
+                border: 1px black solid;
+                background-color: lightgrey;
+                width: 100px;
+                height: 10px;
+                padding: 2px;
+                text-align: center;
+            }
+            #hp
+            {
+                width: 100%;
+                height: 100%;
+                background-color: red;
+            }
+            .shield
+            {
+                border: 1px black solid;
+                background-color: lightgrey;
+                width: 100px;
+                height: 10px;
+                padding: 2px;
+                text-align: center;
+            }
+            #shield
+            {
+                width: 0%;
+                height: 100%;
+                background-color: lightgoldenrodyellow;
+            }
+            button
+            {
+                width: 200px;
+            }
+            table.wide tr td
+            {
+                padding: 10px;
+            }
+            table.wide tr td div
+            {
+                display: inline;
+            }
+        </style>
     </head>
-    <body onload="main();">
+    <body>
         <div>
-            <canvas id="canvas" width="800" height="600">
-                <p>Your browser does not support HTML5 Canvas.</p>
-            </canvas>
+            <table>
+                <tr id="nav">
+                    <td><img src='Content/Images/world.png' data-target="#world" /></td>
+                    <td><img src='Content/Images/shop.png' data-target="#shop" /></td>
+                    <td><img src='Content/Images/combat.png' data-target="#combat" /></td>
+                    <td><img src='Content/Images/combat.png' data-target="#save" /></td>
+                </tr>
+                <tr>
+                    <!-- info bar -->
+                    <td colspan="4">
+                        <div>
+                            <table width='100%'>
+                                <tr>
+                                    <td>HP</td>
+                                    <td>
+                                        <div class='hp'>
+                                            <div id='hp'></div>
+                                        </div>
+                                    </td>
+                                    <td>Shield</td>
+                                    <td>
+                                        <div class='shield'>
+                                            <div id='shield'></div>
+                                        </div>
+                                    </td>
+                                    <td>Rockets</td>
+                                    <td>
+                                        <div id="rockets">0</div>
+                                    </td>
+                                    <td>Gold:</td>
+                                    <td><div id='gold'></div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <!-- body -->
+                    <td colspan="4">
+                        <div id="combat" class="wide mode">
+                            <canvas id="canvas" style='border: 1px white solid;' width="800" height="600">
+                                <p>Your browser does not support HTML5 Canvas.</p>
+                            </canvas>
+                        </div>
+                        <div id="world" class="wide mode">
+                            <p>Each line below represents a level. Click a line
+                                to start that level. At first, you can only see
+                                the first level, but more lines will become
+                                visible as you beat levels.</p>
+                            <div class="level">
+                                <span class="difficulty">1.0</span>
+                                <span class="gold">100</span>
+
+                                <div class="level">
+                                    <span class="difficulty">2.0</span>
+                                    <span class="gold">200</span>
+
+                                    <div class="level">
+                                        <span class="difficulty">3.0</span>
+                                        <span class="gold">400</span>
+
+                                        <div class="level">
+                                            <span class="difficulty">5.0</span>
+                                            <span class="gold">600</span>
+
+                                            <div class="level">
+                                                <span class="difficulty">7.5</span>
+                                                <span class="gold">1000</span>
+                                            </div>
+
+                                            <div class="level">
+                                                <span class="difficulty">9.5</span>
+                                                <span class="gold">2000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="level">
+                                    <span class="difficulty">4.0</span>
+                                    <span class="gold">500</span>
+
+                                    <div class="level">
+                                        <span class="difficulty">6.0</span>
+                                        <span class="gold">1000</span>
+
+                                        <div class="level">
+                                            <span class="difficulty">7.0</span>
+                                            <span class="gold">1500</span>
+                                        </div>
+
+                                        <div class="level">
+                                            <span class="difficulty">9.0</span>
+                                            <span class="gold">2000</span>
+
+                                            <div class="level">
+                                                <span class="difficulty">10.0</span>
+                                                <span class="gold">3000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="shop" class="wide mode">
+                            <table class="wide">
+                                <tr>
+                                    <td colspan="5">
+                                        <h2>Shop</h2>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5">
+                                        <h3>Refills</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button onclick='refillHealth();'>Repair</button>
+                                    </td>
+                                    <td>
+                                        <div id="repairCost">50</div>g
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <button onclick='addRockets();'>Rockets</button>
+                                    </td>
+                                    <td>
+                                        <div id="rocketCost">50</div>g
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5"><h3>Upgrades</h3></td>
+                                </tr>
+                                <tr>
+                                    <td><h4>Type</h4></td>
+                                    <td><h4>Cost</h4></td>
+                                    <td><h4>Current</h4></td>
+                                    <td><h4>Increase</h4></td>
+                                    <td><h4>Level</h4></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="health" onclick="globals.health.levelUp();">Health</button>
+                                    </td>
+                                    <td>
+                                        <div id="healthCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='healthCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="healthInc"></div> hp
+                                    </td>
+                                    <td>
+                                        <div id="healthLvl"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="rocketCap" onclick="globals.rocketCap.levelUp();">Rocket Capacity</button>
+                                    </td>
+                                    <td>
+                                        <div id="rocketCapCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='rocketCapCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="rocketCapInc"></div> rocket Capacity
+                                    </td>
+                                    <td>
+                                        <div id="rocketCapLvl"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="damage" onclick="globals.damage.levelUp();">Damage</button>
+                                    </td>
+                                    <td>
+                                        <div id="damageCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='damageCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="damageInc"></div> damage
+                                    </td>
+                                    <td>
+                                        <div id="damageLvl"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="speed" onclick="globals.speed.levelUp();">Movement Speed</button>
+                                    </td>
+                                    <td>
+                                        <div id="speedCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='speedCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="speedInc"></div>% base speed
+                                    </td>
+                                    <td>
+                                        <div id="speedLvl"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="rate" onclick="globals.rate.levelUp();">Fire Rate</button>
+                                    </td>
+                                    <td>
+                                        <div id="rateCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='rateCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="rateInc"></div> bullet per second
+                                    </td>
+                                    <td>
+                                        <div id="rateLvl"></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </body>
 </html>

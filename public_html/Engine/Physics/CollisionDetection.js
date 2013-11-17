@@ -13,12 +13,12 @@ var CollisionDetection = function() {
     }
     
     this.removeCollider = function(ind) {
-        if (objects.length > 1) {
+        if (objects.length == 1 || ind == objects.length - 1) {
+            objects.pop();
+        }
+        else if (objects.length > 1) {
             objects[ind] = objects.pop();
             objects[ind].updateCIndex(ind);
-        }
-        else if (objects.length == 1) {
-            objects.pop();
         }
     }
     
@@ -41,8 +41,8 @@ var CollisionDetection = function() {
             Math.abs(bobj1[1][1] - bobj2[1][1]) < bobj1[0][1] + bobj2[0][1] &&
             Math.abs(bobj1[1][2] - bobj2[1][2]) < bobj1[0][2] + bobj2[0][2]) {
             
-            obj1.addCollision(bobj2);
-            obj2.addCollision(bobj1);
+            obj1.addCollision(obj2);
+            obj2.addCollision(obj1);
         }
     }
     

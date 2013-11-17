@@ -1,57 +1,56 @@
-var Bullet = function(engine) {
-    var name = "bullet";
-    var speed = 0.5
-    var repositioned = false;
-    var visable = false;
+var Bullet = function (engine, pos) {
+    var type = 'bullet';
+    var name = "sphere";
+    var speed = 2.0;
+    var dmg = 10.0;
     
-    var model = engine.Graphics().createModel(name);
+    var MAX_BULLET_HEIGHT = 50;
+    var MAX_BULLET_WIDTH = 60;
+    
+    
+    var model = engine.Graphics().createModel(name, this);
+    model.setPosition(pos[0], pos[1], pos[2]);
     
     this.draw = function () {
-        if(visable){
-            engine.Graphics().draw(model);
-        }
+        engine.Graphics().draw(model);
     }
+    
     
     this.update = function () {
-        if (!repositioned) {
-            repositioned = true;
-            model.moveY(4);
+        model.moveY(speed);
+    }
+    
+    this.collision = function () {
+        var isDestroyed = false;
+        
+        var cols = model.getCollisions();
+        
+        for (var i = 0; i < cols.length; i++) {
+            var obj = cols[i].getObj();
+            
+            if (obj.getName() !== 'player') {
+                isDestroyed = true;
+            }
         }
         
-        model.rotateY(10);
-        model.rotateX(10);
-        
-        if (engine.Messages().getMessage(" ") == "down") {
-            visable = true;
-                  
-        }
-        if(visable)
-            model.moveY(speed*2);
-        
-        
-        if (engine.Messages().getMessage("W") == "down" && !visable) {
-            model.moveY(speed);
-        }                
-        if (engine.Messages().getMessage("S") == "down" && !visable) {
-            model.moveY(-speed);
-        }
-        if (engine.Messages().getMessage("A") == "down" && !visable) {
-            model.moveX(-speed);
-        }
-        if (engine.Messages().getMessage("D") == "down" && !visable) {
-            model.moveX(speed);
-        }
+        return isDestroyed;
+    }
+    
+    this.isOutside = function () {
+        return model.getPosition()[1] > MAX_BULLET_HEIGHT;
     }
     
     
-    this.getModel = function() {
-        return model;
-    }
-    this.isVisable = function() {
-        return visable;
+    this.getName = function () {
+        return type;
     }
     
-    this.collision = function() {
-        return model.isColliding();
+    this.getDamage = function () {
+        return dmg;
+    }
+    
+    
+    this.destroy = function () {
+        engine.Graphics().destroyModel(model);
     }
 }

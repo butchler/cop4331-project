@@ -1,4 +1,4 @@
-function main() {
+var MainLoop = function () {
     // setup canvas and gl context
     var canvas = document.getElementById("canvas");
     var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -12,6 +12,9 @@ function main() {
     var engine = new Engine(gl);
     
     var contentManager = new ContentManager(engine);
+    var user = new User();
+    user.load();
+    globals.user = user;
     
     
     // prepare the rendering screen
@@ -30,7 +33,13 @@ function main() {
         contentManager.collision();
         contentManager.draw();
         
-        window.requestAnimationFrame(loop);
+        if (globals.inCombat)
+            window.requestAnimationFrame(loop);
     }
-    loop();
+    
+    
+    this.roundStart = function () {
+        contentManager.init();
+        loop();
+    }
 }

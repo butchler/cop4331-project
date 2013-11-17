@@ -4,10 +4,7 @@ var Camera = function(gl, size, modelUp) {
 					
 					
 	// get the distance from the max val to the min val
-	var diagonal = Math.sqrt(
-                            Math.pow(size[0] / 2, 2) +
-                            Math.pow(size[1] / 2, 2) +
-                            Math.pow(size[2] / 2, 2));
+	var diagonal = size;
 					
 					
 	// setup most of the cameras variables and settings
@@ -15,8 +12,8 @@ var Camera = function(gl, size, modelUp) {
 	var at = center;
         var eye = [	
                     center[0],
-                    center[1] + diagonal * 0.5,
-                    center[2] + diagonal * 1.5];
+                    center[1],
+                    center[2] + diagonal];
 	var up = modelUp.slice(0);
 	var near = diagonal * 0.1;
 	var far = diagonal * 3;
