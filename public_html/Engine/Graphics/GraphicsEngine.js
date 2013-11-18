@@ -5,11 +5,14 @@ var GraphicsEngine = function (gl, collisionDetection) {
     // create the vertex shader
     var vs =
             'attribute vec3 position;' +
+            'attribute vec2 texCoord;' +
             'uniform mat4 matP;' +
             'uniform mat4 matV;' +
             'uniform mat4 modelT;' +
+            'varying vec2 tCoord;' +
             'void main() {' +
             '	gl_Position = matP * matV * modelT * vec4(position, 1.0);' +
+            '   tCoord = texCoord;' +
             '}';
 
 
@@ -17,8 +20,10 @@ var GraphicsEngine = function (gl, collisionDetection) {
     // create the fragment shader
     var fs = 
             'precision mediump float;' +
+            'uniform sampler2D sampler;' +
+            'varying vec2 tCoord;' +
             'void main() {' +
-            '	gl_FragColor = vec4(0.0, 1.0, 1.0, 1.0);' +
+            '	gl_FragColor = vec4(1.0, 1.0, 0.0, 0.0);' +//vec4(texture2D(sampler, tCoord).rgb, 1.0);' +
             '}';
     
     
@@ -41,16 +46,21 @@ var GraphicsEngine = function (gl, collisionDetection) {
     // get the location of the position in the vertex shader and enable it
     var pLocation = gl.getAttribLocation(program, 'position');
     gl.enableVertexAttribArray(pLocation);
+    
+    var tLocation = gl.getAttribLocation(program, 'texCoord');
+    gl.enableVertexAttribArray(tLocation);
 
 
     // get the location of the transform matrix, view matrix, and projection matrix
     var mLocation = gl.getUniformLocation(program, 'modelT');
     var projLocation = gl.getUniformLocation(program, 'matP');
     var viewLocation = gl.getUniformLocation(program, 'matV');
+    
+    var samplerLocation = gl.getUniformLocation(program, 'sampler');
 
 
     // create a repository of shared pointers for the different vertex variables
-    var locations = [pLocation];
+    var locations = [pLocation, tLocation];
    
    
    this.getRepo = function () {
@@ -95,7 +105,7 @@ var GraphicsEngine = function (gl, collisionDetection) {
         // set the view and projection matrix in the vertex shader
         gl.uniformMatrix4fv(projLocation, false, camera.getProjMatrix().elements);
         gl.uniformMatrix4fv(viewLocation, false, camera.getViewMatrix().elements);
-
+        gl.uniform1i(samplerLocation, 0);
     }
     
     
