@@ -9,14 +9,15 @@ var User = function() {
     this.currentHealth = 100;
     this.shield = 0;
 
-    this.load = function() {
+    this.load = function(slot) {
         // If there is no saved data, do nothing.
-        if (localStorage.savedData == undefined)
-            return;
+        var saveString = localStorage['save-slot-' + slot];
+        if (saveString === undefined)
+            return false;
 
-        console.log('Loading saved data from localStorage: ' + localStorage.savedData);
+        console.log('Loading saved data from localStorage: ' + saveString);
 
-        var savedData = JSON.parse(localStorage.savedData);
+        var savedData = JSON.parse(saveString);
 
         for (name in savedData) {
             var item = savedData[name];
@@ -27,9 +28,11 @@ var User = function() {
                 this[name] = item;
             }
         }
+
+        return true;
     }
 
-    this.save = function() {
+    this.save = function(slot) {
         var savedData = {};
 
         for (name in this) {
@@ -41,8 +44,22 @@ var User = function() {
             }
         }
 
-        localStorage.savedData = JSON.stringify(savedData);
+        var saveString = localStorage['save-slot-' + slot] = JSON.stringify(savedData);
 
-        console.log('Saved user data: ' + localStorage.savedData);
+        console.log('Saved user data: ' + saveString);
     }
+}
+
+User.getSaveInfo = function(slot) {
+    var saveString = localStorage['save-slot-' + slot];
+    if (saveString === undefined)
+        return null;
+
+    var savedData = JSON.parse(saveString);
+
+    return {
+        numBeatenLevels: savedData.beatenLevels.length,
+        gold: savedData.gold,
+        health: savedData.currentHealth
+    };
 }

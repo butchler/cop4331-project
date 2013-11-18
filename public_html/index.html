@@ -113,9 +113,6 @@
                 globals.user.damage = new ShopItemInfo('damage', 25, 10, 1);
                 globals.user.speed = new ShopItemInfo('speed', 25, 20, 1);
                 globals.user.rate = new ShopItemInfo('rate', 25, 1, 1);
-                globals.user.load();
-
-                setGold(globals.user.gold);
             }
             
             
@@ -158,21 +155,12 @@
 
                     var target = $(this).attr('data-target');
 
-                    
-                    if (target == '#save') {
-                        globals.user.save();
-                        target = '#world';
-                    }
-
                     // Hide all modes.
                     $('.mode').hide();
                     // Show new mode specified in data-target attribute.
                     $(target).show();
 
-                    if (target == '#combat') {
-                        // Doesn't do anything anymore, I guess.
-                    } else if (target == '#world' || target == '#save') {
-                        
+                    if (target === '#world') {
                         // Hide all levels except for the first/top-most one by default.
                         $('.level').hide();
                         $('#world > .level').show();
@@ -182,6 +170,21 @@
                             $(levelSelector).show();
                             // and levels that are immediate descendents of ones the user has beaten.
                             $(levelSelector + ' > .level').show();
+                        });
+                    } else if (target === '#save' || target === '#load') {
+                        // For each button on the save or load page, display a
+                        // summary of the the save information contained in the
+                        // save slot for that button.
+                        $(target + ' button').each(function(index) {
+                            var $this = $(this);
+                            var slot = parseInt($this.attr('data-slot'));
+                            var saveInfo = User.getSaveInfo(slot);
+                            if (saveInfo !== null)
+                                $this.siblings('.save-info').html('<ul><li>Levels beaten: ' + saveInfo.numBeatenLevels + '</li>' +
+                                    '<li>Current gold: ' + saveInfo.gold + '</li>' +
+                                    '<li>Current health: ' + saveInfo.health + '</li></ul>');
+                            else
+                                $this.siblings('.save-info').html('<p>Empty</p>');
                         });
                     }
                 });
@@ -202,8 +205,36 @@
                     startRound();
                 });
 
-                // Show world map by default.
-                $("#nav img[data-target='#world']").click()
+                // Handle saving buttons.
+                $('#save').on('click', 'button', function(event) {
+                    var slot = parseInt($(this).attr('data-slot'));
+                    globals.user.save(slot);
+
+                    alert('Data saved.');
+
+                    // Change back to world map.
+                    $("#nav img[data-target='#world']").click()
+                });
+
+                // Handle loading buttons.
+                $('#load').on('click', 'button', function(event) {
+                    var slot = parseInt($(this).attr('data-slot'));
+                    if (!globals.user.load(slot)) {
+                        alert('No data to load.');
+                        return;
+                    }
+
+                    // Update UI to reflect loaded user data.
+                    setGold(globals.user.gold);
+                    setRockets(globals.user.rockets);
+
+                    // Change back to world map.
+                    $("#nav img[data-target='#world']").click()
+                });
+
+                // Show loading screen by default.
+                $('.mode').hide();
+                $('#loading-screen').show();
             });
         </script>
         
@@ -316,6 +347,27 @@
                 height: 100%;
                 width: auto;
             }
+
+            /* Styles for loading screen. */
+            #loading-screen h1
+            {
+                text-align: center;
+                margin-top: 200px;
+                animation-duration: 3s;
+                animation-name: spin;
+                animation-iteration-count: infinite;
+                animation-direction: alternate;
+            }
+
+            @keyframes spin {
+                from {
+                    transform: rotate(0deg);
+                }
+
+                to {
+                    transform: rotate(720deg);
+                }
+            }
         </style>
     </head>
     <body>
@@ -324,8 +376,8 @@
                 <tr id="nav">
                     <td><img src='Content/Images/world.png' data-target="#world" /></td>
                     <td><img src='Content/Images/shop.png' data-target="#shop" /></td>
-                    <td><img src='Content/Images/combat.png' data-target="#combat" /></td>
-                    <td><img src='Content/Images/combat.png' data-target="#save" /></td>
+                    <td>Save<br><img src='Content/Images/combat.png' data-target="#save" /></td>
+                    <td>Load<br><img src='Content/Images/combat.png' data-target="#load" /></td>
                 </tr>
                 <tr>
                     <!-- info bar -->
@@ -363,6 +415,39 @@
                             <canvas id="canvas" style='border: 1px white solid;' width="800" height="600">
                                 <p>Your browser does not support HTML5 Canvas.</p>
                             </canvas>
+                        </div>
+                        <div id="loading-screen" class="wide mode">
+                            <h1>Loading</h1>
+                        </div>
+                        <div id="save" class="wide mode">
+                            <h2>Choose slot to save to:</h2>
+                            <div class="save-slot">
+                                <button data-slot="1">Slot 1</button>
+                                <div class="save-info"></div>
+                            </div>
+                            <div class="save-slot">
+                                <button data-slot="2">Slot 2</button>
+                                <div class="save-info"></div>
+                            </div>
+                            <div class="save-slot">
+                                <button data-slot="3">Slot 3</button>
+                                <div class="save-info"></div>
+                            </div>
+                        </div>
+                        <div id="load" class="wide mode">
+                            <h2>Choose save slot to load:</h2>
+                            <div class="save-slot">
+                                <button data-slot="1">Slot 1</button>
+                                <div class="save-info"></div>
+                            </div>
+                            <div class="save-slot">
+                                <button data-slot="2">Slot 2</button>
+                                <div class="save-info"></div>
+                            </div>
+                            <div class="save-slot">
+                                <button data-slot="3">Slot 3</button>
+                                <div class="save-info"></div>
+                            </div>
                         </div>
                         <div id="world" class="wide mode">
                             <p>Each line below represents a level. Click a line
