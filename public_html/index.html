@@ -232,8 +232,9 @@
                     $("#nav img[data-target='#world']").click()
                 });
 
-                // Show world map by default.
-                $("#nav img[data-target='#world']").click()
+                // Show loading screen by default.
+                $('.mode').hide();
+                $('#loading-screen').show();
             });
         </script>
         
@@ -346,6 +347,27 @@
                 height: 100%;
                 width: auto;
             }
+
+            /* Styles for loading screen. */
+            #loading-screen h1
+            {
+                text-align: center;
+                margin-top: 200px;
+                animation-duration: 3s;
+                animation-name: spin;
+                animation-iteration-count: infinite;
+                animation-direction: alternate;
+            }
+
+            @keyframes spin {
+                from {
+                    transform: rotate(0deg);
+                }
+
+                to {
+                    transform: rotate(720deg);
+                }
+            }
         </style>
     </head>
     <body>
@@ -393,6 +415,9 @@
                             <canvas id="canvas" style='border: 1px white solid;' width="800" height="600">
                                 <p>Your browser does not support HTML5 Canvas.</p>
                             </canvas>
+                        </div>
+                        <div id="loading-screen" class="wide mode">
+                            <h1>Loading</h1>
                         </div>
                         <div id="save" class="wide mode">
                             <h2>Choose slot to save to:</h2>
