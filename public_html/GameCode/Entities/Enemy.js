@@ -6,9 +6,11 @@ var Enemy = function (engine, health, damage, entrypoint) {
     var dmg = 25.0;
     var bulletDmg = damage;
     
-    var timestep = 0;
-    var prevTime = new Date().getTime();
-    var timeElapsed = 0;
+    //var MAX_FRAMES = 20;
+    var frames = Math.floor((10 - globals.level.difficulty) / 2);
+    var spent = 0;
+    var segment = 0;
+    var path = 0;
     
     var model = engine.Graphics().createModel(name, this);
     
@@ -20,28 +22,22 @@ var Enemy = function (engine, health, damage, entrypoint) {
         engine.Graphics().draw(model);
     }
     
-    this.update = function (initPos, finalPos, time, steps) {
-        model.rotateY(1);
-       
-       var currPos = model.getPosition();
+    this.update = function (prevLocal, newLocal) {
+       model.rotateY(1);
        
        
+       // handle pathing
+       var rx = (newLocal[0] - prevLocal[0]) / frames;
+       var ry = (newLocal[1] - prevLocal[1]) / frames;
        
-       var currTime = new Date().getTime() - prevTime;
-       prevTime = new Date().getTime();
-       timeElapsed += currTime;
-       
-       
-       if (timeElapsed >= time) {
-           timestep = (timestep + 1) % steps;
-           timeElapsed -= time;
-           
-           currTime -= timeElapsed;
-           prevTime -= timeElapsed;
+       spent++;
+       if (spent == frames) {
+           spent = 0;
+           segment++;
        }
        
-       model.moveX(currTime * (finalPos[0] - initPos[0]) / time);
-       model.moveY(currTime * (finalPos[1] - initPos[1]) / time);
+       model.moveX(rx);
+       model.moveY(ry);
     }
     
     
@@ -74,8 +70,18 @@ var Enemy = function (engine, health, damage, entrypoint) {
         return isDestroyed;
     }
     
-    this.getTimeStep = function () {
-        return timestep;
+    this.getSegment = function () {
+        return segment;
+    }
+    
+    this.getPath = function () {
+        return path;
+    }
+    
+    this.updatePath = function (newPath) {
+        path = newPath;
+        segment = 0;
+        spent = 0;
     }
     
     this.destroy = function () {

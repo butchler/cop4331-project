@@ -3,6 +3,7 @@ var Engine = function (gl) {
     var eventHandler = new EventHandler(msg);
     var cd = new CollisionDetection();
     var ge = new GraphicsEngine(gl, cd);
+    var pathing = new Pathing();
     var config = new Config();
     
     
@@ -10,6 +11,10 @@ var Engine = function (gl) {
     
     this.Graphics = function () {
         return ge;
+    }
+    
+    this.Pathing = function () {
+        return pathing;
     }
     
     this.Messages = function () {

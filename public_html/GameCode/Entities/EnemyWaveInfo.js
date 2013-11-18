@@ -1,25 +1,25 @@
 var EnemyWaveInfo = function (engine) {
     var difficulty = globals.level.difficulty * 10;
 
-    var spawnTimer = (1000 / difficulty) + 50;
+    var spawnTimer = 400;
     var prevTime = new Date().getTime();
     var spawnCount = 0;
     var enemyWaveSize = difficulty + 10;
     
-    var entrypoint = [Math.floor(Math.random() * 120) - 60, 50.0];
+    var entrypoint = [0, 60];
     
     
     var enemyHp = Math.floor(difficulty * 9.0 / 10.0) + 10;
     var enemyBulletDmg = Math.floor(difficulty * 3.0 / 20.0) + 10.0;
+
     
-    var timesteps = 4;
-    var pattern = [[entrypoint[0], entrypoint[1]], [30.0, 30.0], [-20.0, 0], [-50, -37]];
-    var timestamps = [1000.0, 1000.0, 1000.0, 1000.0];
+    var paths = [engine.Pathing().getPath(5)];
     
     
     this.update = function (enemies) {
         var currTime = new Date().getTime();
-        if (spawnCount <= enemyWaveSize && currTime - prevTime >= spawnTimer) {
+
+        if (spawnCount < enemyWaveSize && currTime - prevTime >= spawnTimer) {
             prevTime = currTime;
             
             enemies.push(new Enemy(engine, enemyHp, enemyBulletDmg, entrypoint));
@@ -27,12 +27,30 @@ var EnemyWaveInfo = function (engine) {
         }
         
         
+        // update enemies and pathing info
         for (var i = 0; i < enemies.length; i++) {
-            var timestep = enemies[i].getTimeStep();
+            // path now has data path, next
+            var path = paths[enemies[i].getPath()];
+            var segment = enemies[i].getSegment() + 1;
             
-            enemies[i].update(pattern[timestep], 
-                pattern[(timestep + 1) % timesteps], 
-                timestamps[timestep], timesteps);
+            
+            // migrate path to new path
+            if (segment >= path.path.length) {
+                var newPath = enemies[i].getPath() + 1;
+                
+                if (newPath >= paths.length) {
+                    paths.push(engine.Pathing().getPath(path.next));
+                }                
+                
+                path = paths[newPath];
+                enemies[i].updatePath(newPath);
+                
+                
+                segment = enemies[i].getSegment() + 1;
+            }
+                
+                
+            enemies[i].update(path.path[segment - 1], path.path[segment]);
         }
         
         
