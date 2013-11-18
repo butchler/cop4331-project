@@ -1,9 +1,9 @@
-var Drawable = function(gl, verts, ind) {
+var Drawable = function(gl, verts, tex) {
     var vertices = gl.createBuffer();
-    var indices = gl.createBuffer();
+    var texCoord = gl.createBuffer();
     
     // make sure the buffers were created successfully
-    if (!verts || !indices) {
+    if (!verts || !texCoord) {
         alert ("Error Code: X---");
         return;
     }
@@ -13,9 +13,9 @@ var Drawable = function(gl, verts, ind) {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertices);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
     
-    // bind the indices buffer, and fill it with the ind data
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indices);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(ind), gl.STATIC_DRAW);
+    // bind the texCoord buffer, and fill it with the tex data
+    gl.bindBuffer(gl.ARRAY_BUFFER, texCoord);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex), gl.STATIC_DRAW);
     
     
     this.draw = function(locations) {
@@ -25,7 +25,9 @@ var Drawable = function(gl, verts, ind) {
         
         
         // bind and use indices to draw elements
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indices);
-        gl.drawElements(gl.TRIANGLES, ind.length, gl.UNSIGNED_SHORT, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, texCoord);
+        gl.vertexAttribPointer(locations[1], 2, gl.FLOAT, false, 0, 0);
+        
+        gl.drawArrays(gl.TRIANGLES, 0, verts.length);
     }
 }

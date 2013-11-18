@@ -1,7 +1,9 @@
 var EntityRepo = function(gl) {
     var DEFAULT_DIRECTORY = "Content/Models/";
+    var DEFAULT_TEXTURE = "Content/Textures/";
     var DEFAULT_EXTENSION = ".json";
     var entities = [];
+    var materials = [];
     
     
     // add entities to the entity repo if it doesn't already exist

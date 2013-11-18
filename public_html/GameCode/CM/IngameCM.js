@@ -17,6 +17,9 @@ var IngameCM = function (engine) {
     }
     
     this.update = function () {
+        
+        console.log("running");
+        
         player.update();
         
         player.isShooting(bullets, rockets);
