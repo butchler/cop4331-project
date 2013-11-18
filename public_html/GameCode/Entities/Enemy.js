@@ -1,6 +1,6 @@
 var Enemy = function (engine, health, damage, entrypoint) {
     var type = 'enemy';
-    var name = "cube";
+    var name = "seeker";
     
     var hp = health;
     var dmg = 25.0;

@@ -19,7 +19,7 @@ var Renderable = function (gl, modelObject) {
         gl.uniformMatrix4fv(locations[2], false, m.elements);
         
         for (var i = 0; i < meshes.length; i++) {
-            gl.ActiveTexture(gl.TEXTURE0);
+            gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, textures[i]);
             meshes[i].draw(locations);
         }

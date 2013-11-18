@@ -16,10 +16,7 @@ var IngameCM = function (engine) {
         for (var i = 0; i < rockets.length; i++) rockets[i].draw();
     }
     
-    this.update = function () {
-        
-        console.log("running");
-        
+    this.update = function () {        
         player.update();
         
         player.isShooting(bullets, rockets);

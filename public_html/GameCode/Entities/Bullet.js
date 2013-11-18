@@ -1,6 +1,6 @@
 var Bullet = function (engine, pos, damage, side, dir) {
     var type = side;
-    var name = "sphere";
+    var name = "bullet";
     var speed = 2.0;
     var dmg = damage;
     var direction = dir;

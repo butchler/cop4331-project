@@ -28,6 +28,6 @@ var Drawable = function(gl, verts, tex) {
         gl.bindBuffer(gl.ARRAY_BUFFER, texCoord);
         gl.vertexAttribPointer(locations[1], 2, gl.FLOAT, false, 0, 0);
         
-        gl.drawArrays(gl.TRIANGLES, 0, verts.length);
+        gl.drawArrays(gl.TRIANGLES, 0, verts.length / 3);
     }
 }
