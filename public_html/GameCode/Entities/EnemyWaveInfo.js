@@ -6,7 +6,7 @@ var EnemyWaveInfo = function (engine) {
     
     
     var spawnCount = 0;
-    var enemyWaveSize = difficulty + 10;
+    var enemyWaveSize = globals.level.difficulty + 10;
     
     var entrypoint = [0, 60];
     
@@ -14,14 +14,20 @@ var EnemyWaveInfo = function (engine) {
     var enemyHp = Math.floor(difficulty * 9.0 / 10.0) + 10;
     var enemyBulletDmg = Math.floor(difficulty * 3.0 / 20.0) + 10.0;
 
+
+    var enemies = [];
     
     var paths = [engine.Pathing().getPath(5)];
     
     
-    this.update = function (enemies, bullets) {
+    this.draw = function () {
+        for (var i = 0; i < enemies.length; i++) enemies[i].draw();
+    }
+    
+    this.update = function (bullets) {
 
         if (spawnCount < enemyWaveSize && ++frame >= spawnFrames) {
-            frame = 0;;
+            frame = 0;
             
             enemies.push(new Enemy(engine, enemyHp, enemyBulletDmg, entrypoint));
             spawnCount++;
@@ -53,23 +59,22 @@ var EnemyWaveInfo = function (engine) {
                 
             enemies[i].update(path.path[segment - 1], path.path[segment], bullets);
         }
-        
-        
-        if (spawnCount >= enemyWaveSize && enemies.length == 0) 
-            winProcedure();
     }
     
-    function winProcedure () {
-        globals.inCombat = false;
-
-        // Save the fact that the user beat this level.
-        globals.user.beatenLevels.push(globals.level.selector);
-        // Give the user the gold they earned.
-        setGold(globals.user.gold + globals.level.gold);
-
-        // Go to the world map by clicking on the world map button.
-        $("#nav img[data-target='#world']").click();
-
-        alert("Congradulations: You won!");
+    
+    this.collision = function () {
+        for (var i = 0; i < enemies.length; i++)
+            if (enemies[i].collision())
+                removeEntity(enemies, i);
+    }
+    
+    
+    this.isAlive = function () {
+        return enemies.length > 0 || spawnCount < enemyWaveSize;
+    }
+    
+    this.empty = function () {
+        while (enemies.length > 0) 
+            removeEntity(enemies, enemies.length - 1);
     }
 }

@@ -13,3 +13,16 @@ function setRockets(count) {
     r.innerHTML = count;
     globals.user.rockets = count;
 }
+
+
+function removeEntity(list, index) {
+    var obj;
+    if (index == list.length - 1 || list.length == 1) 
+        obj = list.pop();
+    else if (list.length > 1) {
+        obj = list[index];
+        list[index] = list.pop();
+    }
+
+    obj.destroy();
+}

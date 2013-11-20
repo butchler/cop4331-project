@@ -1,27 +1,39 @@
 var IngameCM = function (engine) {
     var player = new Player(engine);
-    var enemies = [];
     var bullets = [];
     var rockets = [];
     
     var encounter;
     
+    var prevTime;
+    var count = 0;
+    
     this.draw = function () {
         player.draw();
         
-        for (var i = 0; i < enemies.length; i++) enemies[i].draw();
+        
+        encounter.draw();
+        
         
         for (var i = 0; i < bullets.length; i++) bullets[i].draw();
         
         for (var i = 0; i < rockets.length; i++) rockets[i].draw();
     }
     
-    this.update = function () {        
+    this.update = function () {
+        var curTime = new Date().getTime();
+        count++;
+        if (curTime - prevTime >= 1000) {
+            console.log(count);
+            count = 0;
+            prevTime = curTime;
+        }
+        
         player.update();
         
         player.isShooting(bullets, rockets);
         
-        encounter.update(enemies, bullets);
+        encounter.update(bullets);
         
         for (var i = 0; i < bullets.length; i++) {
             bullets[i].update();
@@ -40,12 +52,10 @@ var IngameCM = function (engine) {
         // lose condition
         if (player.collision())
             loseCondition();
+
         
-        for (var i = 0; i < enemies.length; i++) {
-            if (enemies[i].collision()) {
-                removeEntity(enemies, i);
-            }
-        }
+        encounter.collision();
+        
         
         for (var i = 0; i < bullets.length; i++) {
             if (bullets[i].collision()) {
@@ -63,6 +73,13 @@ var IngameCM = function (engine) {
     
     function loseCondition () {
         globals.inCombat = false;
+        
+        
+        encounter.empty();
+        
+        
+        while (bullets.length > 0)
+            removeEntity(bullets, bullets.length - 1);
 
         // Go to the world map by clicking on the world map button.
         $("#nav img[data-target='#world']").click();
@@ -75,21 +92,12 @@ var IngameCM = function (engine) {
         player.destroy();
         player = new Player(engine);
         
-        encounter = new EnemyWaveInfo(engine);
+        encounter = new Round(engine);
         
-        for (var i = 0; i < bullets.length; i++)
-            removeEntity(bullets, bullets.length - i - 1);
-    }
-    
-    function removeEntity(list, index) {
-        var obj;
-        if (index == list.length - 1 || list.length == 1) 
-            obj = list.pop();
-        else if (list.length > 1) {
-            obj = list[index];
-            list[index] = list.pop();
-        }
+        while (bullets.length > 0)
+            removeEntity(bullets, bullets.length - 1);
         
-        obj.destroy();
+        
+        prevTime = new Date().getTime();
     }
 }
