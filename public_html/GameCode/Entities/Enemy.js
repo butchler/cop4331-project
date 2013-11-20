@@ -6,6 +6,14 @@ var Enemy = function (engine, health, damage, entrypoint) {
     var dmg = 25.0;
     var bulletDmg = damage;
     
+    var LONGEST_SHOT_TIME = 10000 / globals.level.difficulty;
+    var SHORTEST_SHOT_TIME = 1800 / globals.level.difficulty;
+    
+    
+    var fireRate = updateFireRate();
+    var fireRateFrames = 0;
+    
+    
     //var MAX_FRAMES = 20;
     var frames = Math.floor((10 - globals.level.difficulty) / 2) + 1;
     var spent = 0;
@@ -22,22 +30,31 @@ var Enemy = function (engine, health, damage, entrypoint) {
         engine.Graphics().draw(model);
     }
     
-    this.update = function (prevLocal, newLocal) {
-       model.rotateY(1);
-       
-       
-       // handle pathing
-       var rx = (newLocal[0] - prevLocal[0]) / frames;
-       var ry = (newLocal[1] - prevLocal[1]) / frames;
-       
-       spent++;
-       if (spent == frames) {
-           spent = 0;
-           segment++;
-       }
-       
-       model.moveX(rx);
-       model.moveY(ry);
+    this.update = function (prevLocal, newLocal, bullets) {
+        model.rotateY(1);
+
+
+        if (++fireRateFrames >= fireRate) {
+             fireRateFrames = 0;
+             fireRate = updateFireRate();
+
+             bullets.push(new Bullet(engine, model.getPosition(), 
+                 damage, type, [0, -1]));
+        }
+
+
+        // handle pathing
+        var rx = (newLocal[0] - prevLocal[0]) / frames;
+        var ry = (newLocal[1] - prevLocal[1]) / frames;
+
+        spent++;
+        if (spent == frames) {
+            spent = 0;
+            segment++;
+        }
+
+        model.moveX(rx);
+        model.moveY(ry);
     }
     
     
@@ -86,5 +103,10 @@ var Enemy = function (engine, health, damage, entrypoint) {
     
     this.destroy = function () {
         engine.Graphics().destroyModel(model);
+    }
+    
+    
+    function updateFireRate () {
+        return fireRate = Math.floor(Math.random() * LONGEST_SHOT_TIME) + SHORTEST_SHOT_TIME;
     }
 }

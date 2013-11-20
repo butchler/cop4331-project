@@ -1,8 +1,10 @@
 var EnemyWaveInfo = function (engine) {
     var difficulty = globals.level.difficulty * 10;
 
-    var spawnTimer = 400;
-    var prevTime = new Date().getTime();
+    var spawnFrames = 30 / globals.level.difficulty + 7;
+    var frame = 0;
+    
+    
     var spawnCount = 0;
     var enemyWaveSize = difficulty + 10;
     
@@ -16,11 +18,10 @@ var EnemyWaveInfo = function (engine) {
     var paths = [engine.Pathing().getPath(5)];
     
     
-    this.update = function (enemies) {
-        var currTime = new Date().getTime();
+    this.update = function (enemies, bullets) {
 
-        if (spawnCount < enemyWaveSize && currTime - prevTime >= spawnTimer) {
-            prevTime = currTime;
+        if (spawnCount < enemyWaveSize && ++frame >= spawnFrames) {
+            frame = 0;;
             
             enemies.push(new Enemy(engine, enemyHp, enemyBulletDmg, entrypoint));
             spawnCount++;
@@ -50,7 +51,7 @@ var EnemyWaveInfo = function (engine) {
             }
                 
                 
-            enemies[i].update(path.path[segment - 1], path.path[segment]);
+            enemies[i].update(path.path[segment - 1], path.path[segment], bullets);
         }
         
         

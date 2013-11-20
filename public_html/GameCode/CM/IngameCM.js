@@ -21,7 +21,7 @@ var IngameCM = function (engine) {
         
         player.isShooting(bullets, rockets);
         
-        encounter.update(enemies);
+        encounter.update(enemies, bullets);
         
         for (var i = 0; i < bullets.length; i++) {
             bullets[i].update();
