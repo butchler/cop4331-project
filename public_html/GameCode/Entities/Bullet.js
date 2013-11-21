@@ -11,6 +11,15 @@ var Bullet = function (engine, pos, damage, side, dir) {
     
     var model = engine.Graphics().createModel(name, this);
     model.setPosition(pos[0], pos[1], pos[2]);
+
+    // Rotate bullet to face the direction it is moving.
+    // Find the angle that the bullet is moving, in degrees.
+    var angle = 180*Math.atan2(dir[1], dir[0])/Math.PI;
+    // The model starts off facing up, which is a 90 degree rotation since
+    // Math.atan2 (and trig functions in general) treat 0 degrees as facing to
+    // the right.
+    var modelAngle = 90;
+    model.rotateZ(angle - modelAngle);
     
     this.draw = function () {
         engine.Graphics().draw(model);
