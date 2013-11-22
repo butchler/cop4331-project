@@ -14,7 +14,7 @@ var Bullet = function (engine, pos, damage, side, dir) {
 
     // Rotate bullet to face the direction it is moving.
     // Find the angle that the bullet is moving, in degrees.
-    var angle = 180*Math.atan2(dir[1], dir[0])/Math.PI;
+    var angle = 180*Math.atan2(direction[1], direction[0])/Math.PI;
     // The model starts off facing up, which is a 90 degree rotation since
     // Math.atan2 (and trig functions in general) treat 0 degrees as facing to
     // the right.

@@ -7,11 +7,13 @@ var Player = function (engine) {
     
     
     var speed = globals.speedStat / 200.0;
+    var rotateSpeed = 4.0;
     var maxhp = globals.healthStat;
     var dmg = 50.0;
     var bulletDmg = globals.damageStat;
     var timer = 1000 / globals.rateStat;
     var direction = [0, 1];
+    var angle = 90;
     
     var alive = true;
     
@@ -47,6 +49,21 @@ var Player = function (engine) {
         
         if (engine.Messages().getMessage("D") == "down")
             model.moveX(speed);
+
+        // Rotate ship when player presses arrow keys.
+        if (engine.Messages().getMessage("left-arrow") == "down") {
+            angle += rotateSpeed;
+            model.rotateZ(rotateSpeed);
+            // Caculate the horizontal and vertical components of the new angle.
+            direction = [Math.cos(angle/180*Math.PI), Math.sin(angle/180*Math.PI)];
+        }
+
+        if (engine.Messages().getMessage("right-arrow") == "down") {
+            angle -= rotateSpeed;
+            model.rotateZ(-rotateSpeed);
+            // Caculate the horizontal and vertical components of the new angle.
+            direction = [Math.cos(angle/180*Math.PI), Math.sin(angle/180*Math.PI)];
+        }
     }
     
     this.isShooting = function(bullets, rockets) {
