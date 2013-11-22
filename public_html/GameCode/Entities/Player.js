@@ -118,6 +118,7 @@ var Player = function (engine) {
         if (globals.user.currentHealth <= 0) {
             alive = false;
             globals.user.currentHealth = 0;
+            progress(hpBar, '0%');
         }
         
         return !alive;
