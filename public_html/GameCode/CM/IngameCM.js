@@ -21,13 +21,13 @@ var IngameCM = function (engine) {
     }
     
     this.update = function () {
-        var curTime = new Date().getTime();
+        /*var curTime = new Date().getTime();
         count++;
         if (curTime - prevTime >= 1000) {
             console.log(count);
             count = 0;
             prevTime = curTime;
-        }
+        }*/
         
         player.update();
         
