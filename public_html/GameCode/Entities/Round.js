@@ -69,6 +69,13 @@ var Round = function (engine) {
         
         empty();
 
+        // Undo effects of used powerups when level is over.
+        for (var i = 0; i < globals.usedPowerups.length; i++)
+            globals.usedPowerups[i].undoPowerup();
+        // Destroy powerups that the user didn't pick up.
+        for (var i = 0; i < globals.powerups.length; i++)
+            globals.powerups[i].destroy();
+
         // Save the fact that the user beat this level.
         globals.user.beatenLevels.push(globals.level.selector);
         // Give the user the gold they earned.
