@@ -5,6 +5,9 @@ var Round = function (engine) {
     
     var activeWaves = 0;
     
+    var specialClock = 600;
+    var specialStep = 0;
+    
     var spinners = [];
     var spinnerCount = Math.floor(globals.level.difficulty / 2);
     
@@ -28,6 +31,9 @@ var Round = function (engine) {
         for (var i = 0; i < wave; i++)
             if (waves[i] !== undefined)
                 waves[i].draw();
+        
+        for (var i = 0; i < spinners.length; i++)
+            spinners[i].draw();
     }
     
     
@@ -38,12 +44,38 @@ var Round = function (engine) {
         // don't create a wave if we already have 2 active waves
         if ((wave < waves.length 
                 && ++nextWaveCounter >= nextWave 
-                && activeWaves <= 2) || activeWaves == 0) {
+                && activeWaves < 2) || activeWaves == 0) {
             
             nextWaveCounter = 0;
             wave++;
         }
         
+        specialStep++;
+        if (specialStep >= specialClock) {
+            specialStep = 0;
+            
+            var choice = Math.floor(Math.random() * 2);
+            
+            choice = 0;
+            if (choice == 0 && spinnerCount > 0) {
+                spinnerCount--;
+                spinners.push(new Spinner(engine, 
+                            Math.floor(globals.level.difficulty * 10 + 150),
+                            Math.floor(globals.level.difficulty * 3.0 / 2.0) + 10.0,
+                            [ Math.floor(Math.random() * 70), 60]));
+            }
+        }
+        
+        
+        // reset the number of active waves
+        activeWaves = 0;
+        var isAlive = spinnerCount + bossCount;
+        
+        
+        for (var i = 0; i < spinners.length; i++) {
+            spinners[i].update(bullets);
+            isAlive++;
+        }
         
         // update a wave if the wave still exists
         for (var i = 0; i < wave; i++) {
@@ -58,15 +90,11 @@ var Round = function (engine) {
             }
         }
         
-        // reset the number of active waves
-        activeWaves = 0;
-        var isAlive = 0;
-        
         // check how many waves are still alive, and how many are active
         for (var i = 0; i < waves.length; i++) {
             if (waves[i] !== undefined && waves[i].isAlive()) {
                 isAlive++;
-                activeWaves++;
+                if (i < wave) activeWaves++;
             }
         }
         
@@ -82,6 +110,10 @@ var Round = function (engine) {
         for (var i = 0; i < wave; i++)
             if (waves[i] !== undefined)
                 waves[i].collision();
+        
+        for (var i = 0; i < spinners.length; i++)
+            if (spinners[i].collision())
+                removeEntity(spinners, i);
     }
     
     
@@ -89,6 +121,9 @@ var Round = function (engine) {
         for (var i = 0; i < wave; i++)
             if (waves[i] !== undefined)
                 waves[i].empty();
+        
+        while (spinners.length > 0)
+            removeEntity(spinners, spinners.length - 1);
     }
     this.empty = empty;
     

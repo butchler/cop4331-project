@@ -11,8 +11,8 @@ var GraphicalEntity = function (objin, name, clnOn, index) {
     //                x    y    z
     var position = [0.0, 0.0, 0.0];
     
-    //                a    x    y    z
-    var rotation = [0.0, 0.0, 0.0, 0.0];
+    //                x    y    z
+    var angles =   [0.0, 0.0, 0.0];
     
     
     // move the object
@@ -41,30 +41,16 @@ var GraphicalEntity = function (objin, name, clnOn, index) {
     
     // rotate the object
     this.rotateX = function (angle) {
-        rotate(angle, 1.0, 0.0, 0.0);
+        angles[0] += angle;
     }
     this.rotateY = function (angle) {
-        rotate(angle, 0.0, 1.0, 0.0);
+        angles[1] += angle;
     }
     this.rotateZ = function (angle) {
-        rotate(angle, 0.0, 0.0, 1.0);
+        angles[2] += angle;
     }
     function rotate(angle, x, y, z) {
-        var nx, ny, nz, na, max, min;
         
-        nx = rotation[0] * rotation[1] + x * angle;
-        ny = rotation[0] * rotation[2] + y * angle;
-        nz = rotation[0] * rotation[3] + z * angle;
-        
-        max = Math.max(nx, ny, nz);
-        min = Math.min(nx, ny, nz);
-        
-        na = Math.abs(max) > Math.abs(min)? max: min;
-        
-        rotation[0] = na;
-        rotation[1] = na != 0? nx / na: nx;
-        rotation[2] = na != 0? ny / na: ny;
-        rotation[3] = na != 0? nz / na: nz;
     }
     this.rotate = rotate;
     
@@ -74,7 +60,7 @@ var GraphicalEntity = function (objin, name, clnOn, index) {
     }
     
     this.getOrientation = function() {
-        return rotation.slice();
+        return angles.slice();
     }
     
     
@@ -85,8 +71,9 @@ var GraphicalEntity = function (objin, name, clnOn, index) {
         
         m.translate(position[0], position[1], position[2]);
         
-        if (rotation[0] != 0)
-            m.rotate(rotation[0], rotation[1], rotation[2], rotation[3]);
+        if (angles[0] != 0) m.rotate(angles[0], 1.0, 0.0, 0.0);
+        if (angles[1] != 0) m.rotate(angles[1], 0.0, 1.0, 0.0);
+        if (angles[2] != 0) m.rotate(angles[2], 0.0, 0.0, 1.0);
         
         return m;
     }
