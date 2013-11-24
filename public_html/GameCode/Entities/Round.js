@@ -14,7 +14,7 @@ var Round = function (engine) {
     var boss = [];
     var bossCount = Math.floor(globals.level.difficulty / 10);
     
-    var nextWave = (20 - globals.level.difficulty) * 60;
+    var nextWave = (10 - globals.level.difficulty) * 60;
     var nextWaveCounter = nextWave;
     
     
@@ -36,9 +36,9 @@ var Round = function (engine) {
         // spawn logic for a new wave, don't create a wave if we're out waves
         // don't create a wave before a certain amount of time has passed
         // don't create a wave if we already have 2 active waves
-        if (wave < waves.length 
+        if ((wave < waves.length 
                 && ++nextWaveCounter >= nextWave 
-                && activeWaves <= 2) {
+                && activeWaves <= 2) || activeWaves == 0) {
             
             nextWaveCounter = 0;
             wave++;
