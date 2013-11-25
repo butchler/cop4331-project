@@ -102,7 +102,7 @@ var Round = function (engine) {
         }
         
         for (var i = 0; i < boss.length; i++) {
-            boss[i].update();
+            boss[i].update(bullets);
             isAlive++;
         }
         
