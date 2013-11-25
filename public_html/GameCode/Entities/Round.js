@@ -193,6 +193,6 @@ var Round = function (engine) {
         // Go to the world map by clicking on the world map button.
         $("#nav img[data-target='#world']").click();
 
-        alert("Congradulations: You won!");
+        alert("Congradulations: You won!\n" + getStory(Math.floor(globals.level.difficulty)));
     }
 }
