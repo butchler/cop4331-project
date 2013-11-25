@@ -5,7 +5,7 @@ var Round = function (engine) {
     
     var activeWaves = 0;
     
-    var specialClock = 600;
+    var specialClock = 300;
     var specialStep = 0;
     
     var spinners = [];
@@ -34,6 +34,8 @@ var Round = function (engine) {
         
         for (var i = 0; i < spinners.length; i++)
             spinners[i].draw();
+        for (var i = 0; i < seekers.length; i++)
+            seekers[i].draw();
     }
     
     
@@ -56,7 +58,6 @@ var Round = function (engine) {
             
             var choice = Math.floor(Math.random() * 2);
             
-            choice = 0;
             if (choice == 0 && spinnerCount > 0) {
                 spinnerCount--;
                 spinners.push(new Spinner(engine, 
@@ -64,16 +65,31 @@ var Round = function (engine) {
                             Math.floor(globals.level.difficulty * 3.0 / 2.0) + 10.0,
                             [ Math.floor(Math.random() * 70), 60]));
             }
+            else if (choice > 0 && seekerCount > 0) {
+                seekerCount--;
+                seekers.push(new Seeker(engine,
+                            50.0, 
+                            Math.floor(globals.level.difficulty * 3.0 / 2.0) + 10.0,
+                            [ Math.floor(Math.random() * 70), 60]));
+            }
+            else {
+                specialStep = specialClock;
+            }
         }
         
         
         // reset the number of active waves
         activeWaves = 0;
-        var isAlive = spinnerCount + bossCount;
+        var isAlive = spinnerCount + seekerCount + bossCount;
         
         
         for (var i = 0; i < spinners.length; i++) {
             spinners[i].update(bullets);
+            isAlive++;
+        }
+        
+        for (var i = 0; i < seekers.length; i++) {
+            seekers[i].update();
             isAlive++;
         }
         
@@ -114,6 +130,10 @@ var Round = function (engine) {
         for (var i = 0; i < spinners.length; i++)
             if (spinners[i].collision())
                 removeEntity(spinners, i);
+        
+        for (var i = 0; i < seekers.length; i++)
+            if (seekers[i].collision())
+                removeEntity(seekers, i);
     }
     
     
@@ -124,6 +144,9 @@ var Round = function (engine) {
         
         while (spinners.length > 0)
             removeEntity(spinners, spinners.length - 1);
+        
+        while (seekers.length > 0)
+            removeEntity(seekers, seekers.length - 1);
     }
     this.empty = empty;
     

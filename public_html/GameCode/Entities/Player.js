@@ -98,6 +98,8 @@ var Player = function (engine) {
             // Caculate the horizontal and vertical components of the new angle.
             direction = [Math.cos(angle/180*Math.PI), Math.sin(angle/180*Math.PI)];
         }
+        
+        engine.Messages().updateMessage("playerPosition", model.getPosition());
     }
     
     this.isShooting = function(bullets, rockets) {
