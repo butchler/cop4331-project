@@ -14,12 +14,6 @@ var MainLoop = function () {
     var contentManager = new ContentManager(engine);
     
     
-    // prep all models
-    var names = ["attpower", "attspdpower", "bombpower", "boss", "bullet",
-        "enemy", "healthpower", "scattershot", "seeker", "ship", "speedpower"];
-    
-    engine.Graphics().prepModels(names);
-    
     // prepare the rendering screen
     gl.enable(gl.DEPTH_TEST);
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -45,5 +39,13 @@ var MainLoop = function () {
         contentManager.init();
         engine.Messages().reset();
         loop();
+    }
+    
+    this.prepModels = function () {
+        // prep all models
+        var names = ["attpower", "attspdpower", "bombpower", "boss", "bullet",
+            "enemy", "healthpower", "scattershot", "seeker", "ship", "speedpower"];
+
+        engine.Graphics().prepModels(names);
     }
 }
