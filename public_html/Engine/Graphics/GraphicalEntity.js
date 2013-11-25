@@ -55,6 +55,17 @@ var GraphicalEntity = function (objin, name, clnOn, index) {
     this.rotate = rotate;
     
     
+    // rotate the object
+    this.setRotateX = function (angle) {
+        angles[0] = angle;
+    }
+    this.setRotateY = function (angle) {
+        angles[1] = angle;
+    }
+    this.setRotateZ = function (angle) {
+        angles[2] = angle;
+    }
+    
     this.getPosition = function() {
         return position.slice();
     }

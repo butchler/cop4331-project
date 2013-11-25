@@ -1,6 +1,6 @@
-var Seeker = function (engine, health, damage, entrypoint) {
+var Boss = function (engine, health, damage, entrypoint) {
     var type = 'enemy';
-    var name = "seeker";
+    var name = "boss";
     
     var hp = health;
     var dmg = damage;
@@ -19,6 +19,8 @@ var Seeker = function (engine, health, damage, entrypoint) {
     var delay = 60 / Math.floor(globals.level.difficulty / 2);
     var delayFrames = delay;
     
+    
+    
     this.draw = function () {
         engine.Graphics().draw(model);
     }
@@ -26,8 +28,6 @@ var Seeker = function (engine, health, damage, entrypoint) {
     this.update = function () {
         var moveTo = engine.Messages().getMessage("playerPosition");
 
-            
-        var pos = model.getPosition();
         
         if (frames < travelFrames) {
             frames++;
@@ -38,13 +38,12 @@ var Seeker = function (engine, health, damage, entrypoint) {
         else if (delayFrames >= delay) {
             delayFrames = 0;
             
+            var pos = model.getPosition();
+            
             travelFrames = 60 / Math.floor(globals.level.difficulty / 2);
             
             dx = (moveTo[0] - pos[0]) / travelFrames;
             dy = (moveTo[1] - pos[1]) / travelFrames;
-            
-            console.log(model.getPosition()[0] + " : " + model.getPosition()[1]);
-            console.log(dx + " : " + dy);
         }
         else if (frames !== 0 && frames >= travelFrames) {
             frames = 0;
@@ -55,8 +54,11 @@ var Seeker = function (engine, health, damage, entrypoint) {
         else {
             delayFrames++;
             
-            model.setRotateZ(180*Math.atan2(moveTo[1] - pos[1], moveTo[0] - pos[0])/Math.PI + 90);
+            model.rotateZ(180*Math.atan2(moveTo[1], moveTo[0])/Math.PI);
+            
         }
+        
+        
     }
     
     
