@@ -14,6 +14,40 @@ var Player = function (engine) {
     var timer = 1000 / globals.rateStat;
     var direction = [0, 1];
     var angle = 90;
+
+    // Used to update one of the player's stats after receiving a powerup.
+    this.updateStat = function(stat, addAmount) {
+        // Handle health drop.
+        if (stat === 'health') {
+            globals.user.currentHealth += addAmount;
+            // Make sure health doesn't exceed maximum.
+            if (globals.user.currentHealth > maxhp)
+                globals.user.currentHealth = maxhp;
+            // Update health bar.
+            progress(hpBar, (globals.user.currentHealth / maxhp) * 100 + '%');
+            return;
+        }
+
+        // Handle rocket drop.
+        if (stat === 'rocket') {
+            // Make sure rockets don't exceed rocket cap.
+            if (globals.user.rockets < globals.user.rocketCap.getIncrease())
+                setRockets(globals.user.rockets + addAmount);
+            return;
+        }
+
+        // Handle other stat powerups.
+        globals[stat + 'Stat'] += addAmount;
+
+        // Show the bonus on the screen.
+        var bonusElement = $('#' + stat + '-bonus');
+        var bonus = parseInt(bonusElement.text());
+        bonusElement.text(bonus + addAmount);
+
+        speed = globals.speedStat / 200.0;
+        bulletDmg = globals.damageStat;
+        timer = 1000 / globals.rateStat;
+    }
     
     var alive = true;
     
@@ -128,6 +162,17 @@ var Player = function (engine) {
                 globals.user.currentHealth -= obj.getDamage();
                 
                 progress(hpBar, (globals.user.currentHealth / maxhp) * 100 + '%');
+            }
+
+            // If the player collides with a powerup, use the powerup's effect
+            // and remove it.
+            if (obj instanceof Powerup) {
+                obj.usePowerup(this);
+                // Keep track of which powerups were used so that we can make
+                // sure to undo their effects when the level is over.
+                globals.usedPowerups.push(obj);
+
+                removeEntity(globals.powerups, globals.powerups.indexOf(obj));
             }
         }
         

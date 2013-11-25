@@ -14,6 +14,9 @@ var EnemyWaveInfo = function (engine) {
     var enemyHp = Math.floor(difficulty * 9.0 / 10.0) + 10;
     var enemyBulletDmg = Math.floor(difficulty * 3.0 / 20.0) + 10.0;
 
+    // A number between 0 and 1 that represents the probability that a powerup
+    // will be dropped each time an enemy is killed.
+    var powerupProbability = 0.3;
 
     var enemies = [];
     
@@ -64,8 +67,13 @@ var EnemyWaveInfo = function (engine) {
     
     this.collision = function () {
         for (var i = 0; i < enemies.length; i++)
-            if (enemies[i].collision())
+            if (enemies[i].collision()) {
+                // When an enemy dies, possibly generate a powerup at the enemy's position.
+                if (Math.random() < powerupProbability)
+                    globals.powerups.push(new Powerup(engine, enemies[i].getModel().getPosition()));
+
                 removeEntity(enemies, i);
+            }
     }
     
     

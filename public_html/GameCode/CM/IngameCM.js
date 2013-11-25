@@ -18,6 +18,8 @@ var IngameCM = function (engine) {
         for (var i = 0; i < bullets.length; i++) bullets[i].draw();
         
         for (var i = 0; i < rockets.length; i++) rockets[i].draw();
+
+        for (var i = 0; i < globals.powerups.length; i++) globals.powerups[i].draw();
     }
     
     this.update = function () {
@@ -45,6 +47,14 @@ var IngameCM = function (engine) {
             rockets[i].update();
             if (rockets[i].isOutside())
                 removeEntity(rockets, i);
+        }
+
+        // Move dropped powerups and remove them if they fall past the end of
+        // the screen.
+        for (var i = 0; i < globals.powerups.length; i++) {
+            globals.powerups[i].update();
+            if (globals.powerups[i].isOutside())
+                removeEntity(globals.powerups, i);
         }
     }
     
@@ -93,6 +103,9 @@ var IngameCM = function (engine) {
         player = new Player(engine);
         
         encounter = new Round(engine);
+
+        globals.powerups = [];
+        globals.usedPowerups = [];
         
         while (bullets.length > 0)
             removeEntity(bullets, bullets.length - 1);
