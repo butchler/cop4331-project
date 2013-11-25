@@ -43,7 +43,7 @@ var MainLoop = function () {
     
     this.prepModels = function () {
         // prep all models
-        var names = ["attpower", "attspdpower", "bombpower", "boss", "bullet",
+        var names = ["attpower", "attspdpower", "bombpower", "boss", "bullet", "rocket",
             "enemy", "healthpower", "scattershot", "seeker", "ship", "speedpower"];
 
         engine.Graphics().prepModels(names);
