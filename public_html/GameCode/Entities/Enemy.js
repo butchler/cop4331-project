@@ -15,7 +15,7 @@ var Enemy = function (engine, health, damage, entrypoint) {
     
     
     //var MAX_FRAMES = 20;
-    var frames = Math.floor((10 - globals.level.difficulty) / 2) + 3;
+    var frames = Math.floor((10 - globals.level.difficulty) / 2) + 2;
     var spent = 0;
     var segment = 0;
     var path = 0;

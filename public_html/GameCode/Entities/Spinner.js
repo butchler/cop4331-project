@@ -9,7 +9,7 @@ var Spinner = function (engine, health, damage, entrypoint) {
     var rotation = 0;
     
     
-    var fireRate = 6 * (10 - globals.level.difficulty) + 60;
+    var fireRate = 6 * (10 - globals.level.difficulty) + 30;
     var fireRateFrames = 0;
     
     var model = engine.Graphics().createModel(name, this);

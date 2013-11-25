@@ -16,7 +16,7 @@ var Seeker = function (engine, health, damage, entrypoint) {
     var frames = 0;
     var travelFrames = 0;
     
-    var delay = 6 * Math.floor(10 - globals.level.difficulty) + 30;
+    var delay = 6 * Math.floor(10 - globals.level.difficulty) + 20;
     var delayFrames = delay;
     
     this.draw = function () {
@@ -38,7 +38,7 @@ var Seeker = function (engine, health, damage, entrypoint) {
         else if (delayFrames >= delay) {
             delayFrames = 0;
             
-            travelFrames = 6 * Math.floor(10 - globals.level.difficulty) + 30;
+            travelFrames = 6 * Math.floor(10 - globals.level.difficulty) + 20;
             
             dx = (moveTo[0] - pos[0]) / travelFrames;
             dy = (moveTo[1] - pos[1]) / travelFrames;
