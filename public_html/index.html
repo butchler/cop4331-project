@@ -155,17 +155,7 @@
                 game.roundStart();
             }
 
-            $(document).ready(function() {
-                main();
-
-                // When the user clicks on image in the nav bar, switch to that mode.
-                $('#nav').on('click', 'img', function(event) {
-                    // Don't let the user switch modes if they're in combat.
-                    if (globals.inCombat)
-                        return;
-
-                    var target = $(this).attr('data-target');
-
+            function switchModes(target) {
                     // Hide all modes.
                     $('.mode').hide();
                     // Show new mode specified in data-target attribute.
@@ -198,6 +188,20 @@
                                 $this.siblings('.save-info').html('<p>Empty</p>');
                         });
                     }
+            }
+
+            $(document).ready(function() {
+                main();
+
+                // When the user clicks on image in the nav bar, switch to that mode.
+                $('#nav').on('click', 'img', function(event) {
+                    // Don't let the user switch modes if they're in combat.
+                    if (globals.inCombat)
+                        return;
+
+                    var target = $(this).attr('data-target');
+
+                    switchModes(target);
                 });
 
                 // Handle when the user clicks on a level in the world map.
@@ -243,9 +247,9 @@
                     $("#nav img[data-target='#world']").click()
                 });
 
-                // Show loading screen by default.
+                // Show story intro screen by default.
                 $('.mode').hide();
-                $('#loading-screen').show();
+                $('#story-intro').show();
                 
                 game.prepModels();
             });
@@ -361,25 +365,21 @@
                 width: auto;
             }
 
-            /* Styles for loading screen. */
-            #loading-screen h1
+            /* Styles for story intro. */
+            #story-intro p
             {
                 text-align: center;
-                margin-top: 200px;
-                animation-duration: 3s;
-                animation-name: spin;
-                animation-iteration-count: infinite;
-                animation-direction: alternate;
+                margin-top: 100px;
+                font-family: monospace;
             }
-
-            @keyframes spin {
-                from {
-                    transform: rotate(0deg);
-                }
-
-                to {
-                    transform: rotate(720deg);
-                }
+            a
+            {
+                color: yellow;
+                text-decoration: none;
+            }
+            #manual
+            {
+                font-family: monospace;
             }
         </style>
     </head>
@@ -391,6 +391,7 @@
                     <td><img src='Content/Images/shop.png' data-target="#shop" /></td>
                     <td><img src='Content/Images/save.png' data-target="#save" /></td>
                     <td><img src='Content/Images/load.png' data-target="#load" /></td>
+                    <td><img src='Content/Images/manual.png' data-target="#manual" /></td>
                 </tr>
                 <tr>
                     <!-- info bar -->
@@ -424,8 +425,64 @@
                 <tr>
                     <!-- body -->
                     <td colspan="4">
-                        <div id="loading-screen" class="wide mode">
-                            <h1>Loading</h1>
+                        <div id="story-intro" class="wide mode">
+                            <p>
+                                In the normally peaceful galaxy of Cenflorian,
+                                a storm is arising...  Several rebel fleets
+                                plan to overthrow the fair King Florius in an
+                                effort to throw the galaxy into chaos.  These
+                                rebel fleets want to gain control of each
+                                planet in the galaxy and wreak havoc.  It is
+                                your job, strong knight, to find these rebel
+                                bases on each planet and stop them.
+                                <br><br>
+                                Read the <a href="#" onclick="switchModes('#manual'); return false">tutorial</a>
+                                or click on <a href="#" onclick="switchModes('#world'); return false">World</a>
+                                to begin your fight.
+                            </p>
+                        </div>
+                        <div id="manual" class="wide mode">
+<h1>User Manual</h1>
+
+<p>
+Welcome recruit,
+<br><br>
+To get started, this manual is broken up into different sections: starting a level, upgrades and repairs, to save progress, to load progress, and combat. Fill free to go to the section you need help with.
+</p>
+
+
+<h2>Starting a level</h2>
+
+<p>To start a level first click on the world view, located at the top of the screen. This will load all the levels you currently can play on in the body of the page. To start a game at that level just merely click on planet that you want to play on.</p>
+
+
+<h2>Upgrades and repairs</h2>
+
+<p>To start upgrading, first click on the shop view, located at the top of the screen. This will load the shop upgrades into the body of the page. Upgrade an item by clicking the button near it, beware it won't allow you to purchase the item if you don't have enough gold.</p>
+
+
+<h2>To save progress</h2>
+
+<p>To save your progress, first click on the save view, located at the top of the screen. This will load the save slots into the body of the page. Clicking on a slot will overwrite the saved content with your current game progress.</p>
+
+
+<h2>To load progress</h2>
+
+<p>To load your progress, first click on the load view, located at the top of the screen. This will load the load slots, containing you saved progress, into the body of the page. Clicking on a slot will load the saved content, and you can resume playing from that loaded content.</p>
+
+
+<h2>Combat</h2>
+
+<p>
+Controls:
+<ul>
+    <li>To strafe use A and D</li>
+    <li>To move forward/backward use W and S</li>
+    <li>To fire a rocket press Q</li>
+    <li>To rotate your ship press left-arrow and right-arrow</li>
+</ul>
+Shoot down the enemies to win, but beware of enemies ramming you or shooting you down, you have a limited amount of health. If you run out of health you lose the game, but if you defeat all the enemies you win the game.
+</p>
                         </div>
                         <div id="combat" class="wide mode">
                             <canvas id="canvas" style='border: 1px white solid;' width="800" height="600">
@@ -464,10 +521,7 @@
                             </div>
                         </div>
                         <div id="world" class="wide mode">
-                            <p>Each line below represents a level. Click a line
-                                to start that level. At first, you can only see
-                                the first level, but more lines will become
-                                visible as you beat levels.</p>
+                            <p>Click on one of the planets below to start a level.</p>
                             <div class="level" style="top: 50px; left: 0;">
                                 <div class="level-info">
                                     <span class="difficulty">1.0</span>
