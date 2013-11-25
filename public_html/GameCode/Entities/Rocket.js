@@ -1,6 +1,6 @@
 var Rocket = function (engine, pos, damage, side, dir) {
     var type = side;
-    var name = 'ship';
+    var name = 'rocket';
     
     var speed = 1.5;
     var dmg = damage;
@@ -25,6 +25,7 @@ var Rocket = function (engine, pos, damage, side, dir) {
     // the right.
     var modelAngle = 90;
     model.rotateZ(angle - modelAngle);
+    model.rotateZ(90);
     
     this.draw = function () {
         engine.Graphics().draw(model);
