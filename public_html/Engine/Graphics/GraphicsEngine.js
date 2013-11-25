@@ -89,6 +89,13 @@ var GraphicsEngine = function (gl, collisionDetection) {
     }
     
     
+    this.prepModels = function (names) {        
+        for (var i = 0; i < names.length; i++) {
+            entityRepo.addEntity(names[i]);
+        }
+    }
+    
+    
     this.draw = function(model) {
         var drawn = false;
         
