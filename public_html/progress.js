@@ -24,5 +24,6 @@ function removeEntity(list, index) {
         list[index] = list.pop();
     }
 
-    obj.destroy();
+    if (obj !== undefined && obj.destroy !== undefined)
+        obj.destroy();
 }
