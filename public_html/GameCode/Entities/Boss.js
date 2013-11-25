@@ -1,64 +1,32 @@
-var Boss = function (engine, health, damage, entrypoint) {
+var Boss = function (engine) {
     var type = 'enemy';
     var name = "boss";
     
-    var hp = health;
-    var dmg = damage;
+    var hp = 5000;
+    var dmg = 25;
     
     var model = engine.Graphics().createModel(name, this);
     
-    model.moveX(entrypoint[0]);
-    model.moveY(entrypoint[1]);
+    model.moveX(-60);
+    model.moveY(40);
     
+    model.rotateX(-90);
     
-    var dx = 0;
-    var dy = 0;
-    var frames = 0;
-    var travelFrames = 0;
-    
-    var delay = 60 / Math.floor(globals.level.difficulty / 2);
-    var delayFrames = delay;
-    
+    var speed = 0.5;
+    var dx = speed;
     
     
     this.draw = function () {
         engine.Graphics().draw(model);
     }
     
-    this.update = function () {
-        var moveTo = engine.Messages().getMessage("playerPosition");
-
+    this.update = function (bullets) {        
+        model.moveX(dx);
         
-        if (frames < travelFrames) {
-            frames++;
-            
-            model.moveX(dx);
-            model.moveY(dy);
-        }
-        else if (delayFrames >= delay) {
-            delayFrames = 0;
-            
-            var pos = model.getPosition();
-            
-            travelFrames = 60 / Math.floor(globals.level.difficulty / 2);
-            
-            dx = (moveTo[0] - pos[0]) / travelFrames;
-            dy = (moveTo[1] - pos[1]) / travelFrames;
-        }
-        else if (frames !== 0 && frames >= travelFrames) {
-            frames = 0;
-            travelFrames = 0;
-            dx = 0;
-            dy = 0;
-        }
-        else {
-            delayFrames++;
-            
-            model.rotateZ(180*Math.atan2(moveTo[1], moveTo[0])/Math.PI);
-            
-        }
+        var pos = model.getPosition();
         
-        
+        if (pos[0] > 40) dx = -speed;
+        if (pos[0] < -40) dx = speed;
     }
     
     

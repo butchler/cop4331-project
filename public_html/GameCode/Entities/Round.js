@@ -36,6 +36,8 @@ var Round = function (engine) {
             spinners[i].draw();
         for (var i = 0; i < seekers.length; i++)
             seekers[i].draw();
+        for (var i = 0; i < boss.length; i++)
+            boss[i].draw();
     }
     
     
@@ -77,6 +79,12 @@ var Round = function (engine) {
             }
         }
         
+        if (bossCount > 0) {
+            bossCount--;
+            
+            boss.push(new Boss(engine));
+        }
+        
         
         // reset the number of active waves
         activeWaves = 0;
@@ -90,6 +98,11 @@ var Round = function (engine) {
         
         for (var i = 0; i < seekers.length; i++) {
             seekers[i].update();
+            isAlive++;
+        }
+        
+        for (var i = 0; i < boss.length; i++) {
+            boss[i].update();
             isAlive++;
         }
         
@@ -134,6 +147,10 @@ var Round = function (engine) {
         for (var i = 0; i < seekers.length; i++)
             if (seekers[i].collision())
                 removeEntity(seekers, i);
+        
+        for (var i = 0; i < boss.length; i++)
+            if (boss[i].collision())
+                removeEntity(boss, i);        
     }
     
     
@@ -147,6 +164,9 @@ var Round = function (engine) {
         
         while (seekers.length > 0)
             removeEntity(seekers, seekers.length - 1);
+        
+        while (boss.length > 0)
+            removeEntity(boss, boss.length - 1);
     }
     this.empty = empty;
     

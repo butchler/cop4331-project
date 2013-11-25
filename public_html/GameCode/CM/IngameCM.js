@@ -23,13 +23,6 @@ var IngameCM = function (engine) {
     }
     
     this.update = function () {
-        /*var curTime = new Date().getTime();
-        count++;
-        if (curTime - prevTime >= 1000) {
-            console.log(count);
-            count = 0;
-            prevTime = curTime;
-        }*/
         
         player.update();
         
@@ -90,6 +83,9 @@ var IngameCM = function (engine) {
         
         while (bullets.length > 0)
             removeEntity(bullets, bullets.length - 1);
+        
+        while (rockets.length > 0)
+            removeEntity(rockets, rockets.length - 1);
 
         // Go to the world map by clicking on the world map button.
         $("#nav img[data-target='#world']").click();
@@ -109,6 +105,9 @@ var IngameCM = function (engine) {
         
         while (bullets.length > 0)
             removeEntity(bullets, bullets.length - 1);
+        
+        while (rockets.length > 0)
+            removeEntity(rockets, rockets.length - 1);
         
         
         prevTime = new Date().getTime();

@@ -115,7 +115,7 @@ var Player = function (engine) {
                 && canCreateMissile()) {
             
             rockets.push(new Rocket(engine, model.getPosition(),
-                50.0, type, direction));
+                bulletDmg * 5, type, direction));
             
             prevRocketTime = new Date().getTime();
             setRockets(globals.user.rockets - 1);
