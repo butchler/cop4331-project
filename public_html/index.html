@@ -17,6 +17,10 @@
 
                 var path, node = this;
                 while (node.length) {
+                    // Stop when we reach a node that has an id.
+                    var id = node.attr('id');
+                    if (id) return '#' + id + (path ? '>' + path : '');
+
                     var realNode = node[0], name = realNode.localName;
                     if (!name) break;
                     name = name.toLowerCase();
@@ -24,7 +28,7 @@
                     var parent = node.parent();
 
                     var siblings = parent.children(name);
-                    if (siblings.length > 1) { 
+                    if (siblings.length > 1) {
                         name += ':eq(' + siblings.index(realNode) + ')';
                     }
 
