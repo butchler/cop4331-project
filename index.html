@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <!-- scripts -->
+        <script>var globals = {};</script>
+
+        <!-- utils -->
+        <script src="Utils/jquery.min.js"></script>
+        <script type="text/javascript">
+            // Copied from this answer on Stack Overflow: http://stackoverflow.com/a/2068381
+            // Returns a jQuery selector that can be used to re-select the current jQuery element.
+            jQuery.fn.getPath = function () {
+                if (this.length != 1) throw 'Requires one element.';
+
+                var path, node = this;
+                while (node.length) {
+                    var realNode = node[0], name = realNode.localName;
+                    if (!name) break;
+                    name = name.toLowerCase();
+
+                    var parent = node.parent();
+
+                    var siblings = parent.children(name);
+                    if (siblings.length > 1) { 
+                        name += ':eq(' + siblings.index(realNode) + ')';
+                    }
+
+                    path = name + (path ? '>' + path : '');
+                    node = parent;
+                }
+
+                return path;
+            };
+        </script>
+        <script src="Utils/cuon-matrix-v2.js"></script>
+        <script src="Utils/cuon-utils.js"></script>
+        <script src="Utils/webgl-debug.js"></script>
+        <script src="Utils/webgl-utils.js"></script>
+        <script src="Utils/Sound.js"></script>
+        
+        
+        
+        <!-- html specific -->
+        <script src='progress.js'></script>
+        <script src='ShopItemInfo.js'></script>
+        
+        
+        <!-- Controls -->
+        <script src='Engine/Controls/Config.js'></script>
+        <script src="Engine/Controls/Message.js"></script>
+        <script src="Engine/Controls/EventHandler.js"></script>
+        
+        
+        <!-- Pathing -->
+        <script src="Engine/Pathing/Pathing.js"></script>
+        
+        
+        <!-- Physics Engine -->
+        <script src="Engine/Physics/CollisionDetection.js"></script>
+        
+        <!-- Graphics Engine -->
+        <script src="Engine/Graphics/ParseJSON.js"></script>
+        <script src="Engine/Graphics/Drawable.js"></script>
+        <script src="Engine/Graphics/Renderable.js"></script>
+        <script src="Engine/Graphics/Camera.js"></script>
+        <script src="Engine/Graphics/EntityRepo.js"></script>
+        <script src="Engine/Graphics/GraphicalEntity.js"></script>
+        <script src="Engine/Graphics/GraphicsEngine.js"></script>
+        
+        <!-- Engine -->
+        <script src='Engine/Engine.js'></script>
+
+        <script src="GameCode/User.js"></script>
+        
+        <!-- Entities -->
+        <script src="GameCode/Entities/Storyline.js"></script>
+        <script src="GameCode/Entities/Rocket.js"></script>
+        <script src="GameCode/Entities/Enemy.js"></script>
+        <script src="GameCode/Entities/Spinner.js"></script>
+        <script src="GameCode/Entities/Seeker.js"></script>        
+        <script src="GameCode/Entities/Boss.js"></script>
+        <script src="GameCode/Entities/EnemyWaveInfo.js"></script>
+        <script src="GameCode/Entities/Bullet.js"></script>
+        <script src="GameCode/Entities/Player.js"></script>
+        <script src="GameCode/Entities/Cube.js"></script>
+        <script src="GameCode/Entities/Bullet.js"></script>
+        <script src="GameCode/Entities/Round.js"></script>
+        <script src="GameCode/Entities/Powerup.js"></script>
+        
+        <!-- Content Managers -->
+        <script src="GameCode/CM/MenuCM.js"></script>
+        <script src="GameCode/CM/ShopCM.js"></script>
+        <script src="GameCode/CM/IngameCM.js"></script>
+        <script src="GameCode/CM/OverWorldCM.js"></script>
+        <script src="ContentManager.js"></script>
+        
+        <!-- Main Loop -->
+        <script src="MainLoop.js"></script>
+        
+        
+        <script type="text/javascript">
+            var game;
+            var globals = new Object();
+            
+            globals.healthBase = 100;
+            globals.rocketCapBase = 1;
+            globals.damageBase = 10;
+            globals.speedBase = 100;
+            globals.rateBase = 2;
+
+            function main() {
+                game = new MainLoop();
+                init();
+            }
+            
+            // read from a file, and what not
+            function init() {
+                globals.user = new User();
+                // These need to be set outside of the User class because ShopItemInfo depends on global.user.
+                globals.user.health = new ShopItemInfo('health', 25, 50, 1);
+                globals.user.rocketCap = new ShopItemInfo('rocketCap', 25, 1, 1);
+                globals.user.damage = new ShopItemInfo('damage', 25, 10, 1);
+                globals.user.speed = new ShopItemInfo('speed', 25, 20, 1);
+                globals.user.rate = new ShopItemInfo('rate', 25, 1, 1);
+            }
+            
+            
+            function refillHealth() {
+                var hp = document.getElementById("hp");
+                
+                if (globals.user.gold >= 50) {
+                    progress(hp, '100%');
+                    globals.user.currentHealth = globals.healthStat;
+                    setGold(globals.user.gold - 50);
+                }
+            }
+            
+            function addRockets() {
+                if (globals.user.rockets < globals.user.rocketCap.getIncrease() 
+                    && globals.user.gold >= 50) {
+                    setRockets(globals.user.rockets + 1);
+                    setGold(globals.user.gold - 50);
+                }
+            }
+
+            // starts the games round
+            function startRound() {
+                $('.mode').hide();
+                $('#combat').show();
+
+                globals.inCombat = true;
+
+                game.roundStart();
+            }
+
+            function switchModes(target) {
+                    // Hide all modes.
+                    $('.mode').hide();
+                    // Show new mode specified in data-target attribute.
+                    $(target).show();
+
+                    if (target === '#world') {
+                        // Hide all levels except for the first/top-most one by default.
+                        $('.level').hide();
+                        $('#world > .level').show();
+
+                        globals.user.beatenLevels.forEach(function (levelSelector) {
+                            // Only show levels the user has already beaten,
+                            $(levelSelector).show();
+                            // and levels that are immediate descendents of ones the user has beaten.
+                            $(levelSelector + ' > .level').show();
+                        });
+                    } else if (target === '#save' || target === '#load') {
+                        // For each button on the save or load page, display a
+                        // summary of the the save information contained in the
+                        // save slot for that button.
+                        $(target + ' button').each(function(index) {
+                            var $this = $(this);
+                            var slot = parseInt($this.attr('data-slot'));
+                            var saveInfo = User.getSaveInfo(slot);
+                            if (saveInfo !== null)
+                                $this.siblings('.save-info').html('<ul><li>Levels beaten: ' + saveInfo.numBeatenLevels + '</li>' +
+                                    '<li>Current gold: ' + saveInfo.gold + '</li>' +
+                                    '<li>Current health: ' + saveInfo.health + '</li></ul>');
+                            else
+                                $this.siblings('.save-info').html('<p>Empty</p>');
+                        });
+                    }
+            }
+
+            $(document).ready(function() {
+                main();
+
+                // When the user clicks on image in the nav bar, switch to that mode.
+                $('#nav').on('click', 'img', function(event) {
+                    // Don't let the user switch modes if they're in combat.
+                    if (globals.inCombat)
+                        return;
+
+                    var target = $(this).attr('data-target');
+
+                    switchModes(target);
+                });
+
+                // Handle when the user clicks on a level in the world map.
+                $('#world').on('click', '.level-info', function(event) {
+                    // Only handle for innermost level clicked.
+                    event.stopPropagation();
+
+                    var $this = $(this);
+
+                    globals.level = {
+                        difficulty: parseFloat($this.children('.difficulty').text()),
+                        gold: parseInt($this.children('.gold').text()),
+                        selector: $this.parent().getPath()
+                    };
+
+                    startRound();
+                });
+
+                // Handle saving buttons.
+                $('#save').on('click', 'button', function(event) {
+                    var slot = parseInt($(this).attr('data-slot'));
+                    globals.user.save(slot);
+
+                    alert('Data saved.');
+
+                    // Change back to world map.
+                    $("#nav img[data-target='#world']").click()
+                });
+
+                // Handle loading buttons.
+                $('#load').on('click', 'button', function(event) {
+                    var slot = parseInt($(this).attr('data-slot'));
+                    if (!globals.user.load(slot)) {
+                        alert('No data to load.');
+                        return;
+                    }
+
+                    // Update UI to reflect loaded user data.
+                    setGold(globals.user.gold);
+                    setRockets(globals.user.rockets);
+
+                    // Change back to world map.
+                    $("#nav img[data-target='#world']").click()
+                });
+
+                // Show story intro screen by default.
+                $('.mode').hide();
+                $('#story-intro').show();
+                
+                game.prepModels();
+            });
+        </script>
+        
+        
+        <style>
+            body
+            {
+                background-color: black;
+                color: white;
+            }
+            .wide
+            {
+                width: 800px;
+            }
+            .hp
+            {
+                border: 1px black solid;
+                background-color: lightgrey;
+                width: 100px;
+                height: 10px;
+                padding: 2px;
+                text-align: center;
+            }
+            #hp
+            {
+                width: 100%;
+                height: 100%;
+                background-color: red;
+            }
+            .shield
+            {
+                border: 1px black solid;
+                background-color: lightgrey;
+                width: 100px;
+                height: 10px;
+                padding: 2px;
+                text-align: center;
+            }
+            #shield
+            {
+                width: 0%;
+                height: 100%;
+                background-color: lightgoldenrodyellow;
+            }
+            button
+            {
+                width: 200px;
+            }
+            table.wide tr td
+            {
+                padding: 10px;
+            }
+            table.wide tr td div
+            {
+                display: inline;
+            }
+
+            /* Styling for world map. */
+            #world
+            {
+                position: relative;
+            }
+            .level
+            {
+                position: absolute;
+            }
+            .level-info
+            {
+                position: relative;
+                width: 130px;
+                height: 100px;
+                cursor: pointer;
+                font-size: 0.95em;
+            }
+            /* When user hovers over level info, increase size of planet a little. */
+            .level-info:hover
+            {
+                left: -5px;
+                top: -5px;
+                width: 150px;
+                height: 120px;
+            }
+            /* Position gold and difficulty indicators at bottom right of planet. */
+            .level .difficulty, .level .gold
+            {
+                position: absolute;
+                right: 0;
+            }
+            .level .difficulty
+            {
+                bottom: 10px;
+                color: red;
+            }
+            .level .gold
+            {
+                bottom: 30px;
+                color: gold;
+            }
+            .level .difficulty:before
+            {
+                content: "Difficulty: ";
+            }
+            .level .gold:before
+            {
+                content: "Gold: ";
+            }
+            /* Make planet take up the full height of its container, but keep its aspect ratio. */
+            .level .planet
+            {
+                height: 100%;
+                width: auto;
+            }
+
+            /* Styles for story intro. */
+            #story-intro p
+            {
+                text-align: center;
+                margin-top: 100px;
+                font-family: monospace;
+            }
+            a
+            {
+                color: yellow;
+                text-decoration: none;
+            }
+            #manual
+            {
+                font-family: monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <table>
+                <tr id="nav">
+                    <td><img src='Content/Images/world.png' data-target="#world" /></td>
+                    <td><img src='Content/Images/shop.png' data-target="#shop" /></td>
+                    <td><img src='Content/Images/save.png' data-target="#save" /></td>
+                    <td><img src='Content/Images/load.png' data-target="#load" /></td>
+                    <td><img src='Content/Images/manual.png' data-target="#manual" /></td>
+                </tr>
+                <tr>
+                    <!-- info bar -->
+                    <td colspan="4">
+                        <div>
+                            <table width='100%'>
+                                <tr>
+                                    <td>HP</td>
+                                    <td>
+                                        <div class='hp'>
+                                            <div id='hp'></div>
+                                        </div>
+                                    </td>
+                                    <!--<td>Shield</td>
+                                    <td>
+                                        <div class='shield'>
+                                            <div id='shield'></div>
+                                        </div>
+                                    </td>-->
+                                    <td>Rockets</td>
+                                    <td>
+                                        <div id="rockets">0</div>
+                                    </td>
+                                    <td>Gold:</td>
+                                    <td><div id='gold'></div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <!-- body -->
+                    <td colspan="4">
+                        <div id="story-intro" class="wide mode">
+                            <p>
+                                In the normally peaceful galaxy of Cenflorian,
+                                a storm is arising...  Several rebel fleets
+                                plan to overthrow the fair King Florius in an
+                                effort to throw the galaxy into chaos.  These
+                                rebel fleets want to gain control of each
+                                planet in the galaxy and wreak havoc.  It is
+                                your job, strong knight, to find these rebel
+                                bases on each planet and stop them.
+                                <br><br>
+                                Read the <a href="#" onclick="switchModes('#manual'); return false">tutorial</a>
+                                or click on <a href="#" onclick="switchModes('#world'); return false">World</a>
+                                to begin your fight.
+                            </p>
+                        </div>
+                        <div id="manual" class="wide mode">
+<h1>User Manual</h1>
+
+<p>
+Welcome recruit,
+<br><br>
+To get started, this manual is broken up into different sections: starting a level, upgrades and repairs, to save progress, to load progress, and combat. Fill free to go to the section you need help with.
+</p>
+
+
+<h2>Starting a level</h2>
+
+<p>To start a level first click on the world view, located at the top of the screen. This will load all the levels you currently can play on in the body of the page. To start a game at that level just merely click on planet that you want to play on.</p>
+
+
+<h2>Upgrades and repairs</h2>
+
+<p>To start upgrading, first click on the shop view, located at the top of the screen. This will load the shop upgrades into the body of the page. Upgrade an item by clicking the button near it, beware it won't allow you to purchase the item if you don't have enough gold.</p>
+
+
+<h2>To save progress</h2>
+
+<p>To save your progress, first click on the save view, located at the top of the screen. This will load the save slots into the body of the page. Clicking on a slot will overwrite the saved content with your current game progress.</p>
+
+
+<h2>To load progress</h2>
+
+<p>To load your progress, first click on the load view, located at the top of the screen. This will load the load slots, containing you saved progress, into the body of the page. Clicking on a slot will load the saved content, and you can resume playing from that loaded content.</p>
+
+
+<h2>Combat</h2>
+
+<p>
+Controls:
+<ul>
+    <li>To strafe use A and D</li>
+    <li>To move forward/backward use W and S</li>
+    <li>To fire a rocket press Q</li>
+    <li>To rotate your ship press left-arrow and right-arrow</li>
+</ul>
+Shoot down the enemies to win, but beware of enemies ramming you or shooting you down, you have a limited amount of health. If you run out of health you lose the game, but if you defeat all the enemies you win the game.
+</p>
+                        </div>
+                        <div id="combat" class="wide mode">
+                            <canvas id="canvas" style='border: 1px white solid;' width="800" height="600">
+                                <p>Your browser does not support HTML5 Canvas.</p>
+                            </canvas>
+                            <p>Speed bonus: +<span id="speed-bonus">0</span>, Damage bonus: +<span id="damage-bonus">0</span>, Fire rate bonus: +<span id="rate-bonus">0</span></p>
+                        </div>
+                        <div id="save" class="wide mode">
+                            <h2>Choose slot to save to:</h2>
+                            <div class="save-slot">
+                                <button data-slot="1">Slot 1</button>
+                                <div class="save-info"></div>
+                            </div>
+                            <div class="save-slot">
+                                <button data-slot="2">Slot 2</button>
+                                <div class="save-info"></div>
+                            </div>
+                            <div class="save-slot">
+                                <button data-slot="3">Slot 3</button>
+                                <div class="save-info"></div>
+                            </div>
+                        </div>
+                        <div id="load" class="wide mode">
+                            <h2>Choose save slot to load:</h2>
+                            <div class="save-slot">
+                                <button data-slot="1">Slot 1</button>
+                                <div class="save-info"></div>
+                            </div>
+                            <div class="save-slot">
+                                <button data-slot="2">Slot 2</button>
+                                <div class="save-info"></div>
+                            </div>
+                            <div class="save-slot">
+                                <button data-slot="3">Slot 3</button>
+                                <div class="save-info"></div>
+                            </div>
+                        </div>
+                        <div id="world" class="wide mode">
+                            <p>Click on one of the planets below to start a level.</p>
+                            <div class="level" style="top: 50px; left: 0;">
+                                <div class="level-info">
+                                    <span class="difficulty">1.0</span>
+                                    <span class="gold">100</span>
+                                    <img class="planet" src="Content/Images/red-planet.png" />
+                                </div>
+
+                                <div class="level" style="top: 25px; left: 200px;">
+                                    <div class="level-info">
+                                        <span class="difficulty">2.0</span>
+                                        <span class="gold">200</span>
+                                        <img class="planet" src="Content/Images/yellow-planet.png" />
+                                    </div>
+
+                                    <div class="level" style="top: -10px; left: 200px;">
+                                        <div class="level-info">
+                                            <span class="difficulty">3.0</span>
+                                            <span class="gold">400</span>
+                                            <img class="planet" src="Content/Images/blue-planet.png" />
+                                        </div>
+
+                                        <div class="level" style="top: 100px; left: 200px;">
+                                            <div class="level-info">
+                                                <span class="difficulty">5.0</span>
+                                                <span class="gold">600</span>
+                                                <img class="planet" src="Content/Images/grey-planet.png" />
+                                            </div>
+
+                                            <div class="level" style="top: 50px; left: -200px;">
+                                                <div class="level-info">
+                                                    <span class="difficulty">7.5</span>
+                                                    <span class="gold">1000</span>
+                                                    <img class="planet" src="Content/Images/yellow-planet.png" />
+                                                </div>
+                                            </div>
+
+                                            <div class="level" style="top: -50px; left: 200px;">
+                                                <div class="level-info">
+                                                    <span class="difficulty">9.5</span>
+                                                    <span class="gold">2000</span>
+                                                    <img class="planet" src="Content/Images/blue-planet.png" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="level" style="top: 200px; left: 50px;">
+                                    <div class="level-info">
+                                        <span class="difficulty">4.0</span>
+                                        <span class="gold">500</span>
+                                        <img class="planet" src="Content/Images/blue-planet.png" />
+                                    </div>
+
+                                    <div class="level" style="top: 80px; left: 150px;">
+                                        <div class="level-info">
+                                            <span class="difficulty">6.0</span>
+                                            <span class="gold">1000</span>
+                                            <img class="planet" src="Content/Images/red-planet.png" />
+                                        </div>
+
+                                        <div class="level" style="top: 40px; left: 250px;">
+                                            <div class="level-info">
+                                                <span class="difficulty">7.0</span>
+                                                <span class="gold">1500</span>
+                                                <img class="planet" src="Content/Images/yellow-planet.png" />
+                                            </div>
+                                        </div>
+
+                                        <div class="level" style="top: 150px; left: -80px;">
+                                            <div class="level-info">
+                                                <span class="difficulty">9.0</span>
+                                                <span class="gold">2000</span>
+                                                <img class="planet" src="Content/Images/grey-planet.png" />
+                                            </div>
+
+                                            <div class="level" style="top: 10px; left: 220px;">
+                                                <div class="level-info">
+                                                    <span class="difficulty">10.0</span>
+                                                    <span class="gold">3000</span>
+                                                    <img class="planet" src="Content/Images/red-planet.png" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="shop" class="wide mode">
+                            <table class="wide">
+                                <tr>
+                                    <td colspan="5">
+                                        <h2>Shop</h2>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5">
+                                        <h3>Refills</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button onclick='refillHealth();'>Repair</button>
+                                    </td>
+                                    <td>
+                                        <div id="repairCost">50</div>g
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <button onclick='addRockets();'>Rockets</button>
+                                    </td>
+                                    <td>
+                                        <div id="rocketCost">50</div>g
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5"><h3>Upgrades</h3></td>
+                                </tr>
+                                <tr>
+                                    <td><h4>Type</h4></td>
+                                    <td><h4>Cost</h4></td>
+                                    <td><h4>Current</h4></td>
+                                    <td><h4>Increase</h4></td>
+                                    <td><h4>Level</h4></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="health" onclick="globals.user.health.levelUp();">Health</button>
+                                    </td>
+                                    <td>
+                                        <div id="healthCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='healthCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="healthInc"></div> hp
+                                    </td>
+                                    <td>
+                                        <div id="healthLvl"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="rocketCap" onclick="globals.user.rocketCap.levelUp();">Rocket Capacity</button>
+                                    </td>
+                                    <td>
+                                        <div id="rocketCapCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='rocketCapCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="rocketCapInc"></div> rocket Capacity
+                                    </td>
+                                    <td>
+                                        <div id="rocketCapLvl"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="damage" onclick="globals.user.damage.levelUp();">Damage</button>
+                                    </td>
+                                    <td>
+                                        <div id="damageCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='damageCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="damageInc"></div> damage
+                                    </td>
+                                    <td>
+                                        <div id="damageLvl"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="speed" onclick="globals.user.speed.levelUp();">Movement Speed</button>
+                                    </td>
+                                    <td>
+                                        <div id="speedCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='speedCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="speedInc"></div>% base speed
+                                    </td>
+                                    <td>
+                                        <div id="speedLvl"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="rate" onclick="globals.user.rate.levelUp();">Fire Rate</button>
+                                    </td>
+                                    <td>
+                                        <div id="rateCost"></div>g
+                                    </td>
+                                    <td>
+                                        <div id='rateCur'></div>
+                                    </td>
+                                    <td>
+                                        +<div id="rateInc"></div> bullet per second
+                                    </td>
+                                    <td>
+                                        <div id="rateLvl"></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
